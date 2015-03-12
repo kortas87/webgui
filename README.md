@@ -12,6 +12,18 @@ following steps to setup a working Enviroment:
     pip install -r requirements.txt
 ~~~
 
+for Ubuntu 14.04:
+    
+~~~    
+    python3 -m venv LS_env --without-pip
+    
+    source LS_env/bin/activate
+    wget https://bootstrap.pypa.io/get-pip.py
+    python get-pip.py
+    deactivate
+    source bin/activate
+~~~
+
 ## Migration the Database
 
 for a new Project:

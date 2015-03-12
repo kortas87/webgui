@@ -91,8 +91,14 @@ class BmsLion:
                         #print(self.connection.getSettingsDict())
                         self.datalayer.receivecounter = 0
                         self.datalayer.status = 'connected to '+self.dev
+                        print("first wait")
+                        time.sleep(3)
                         self.send(":l5")
+                        print("2nd wait")
+                        time.sleep(3)
                         self.send(":l5")
+                        print("3rd wait")
+                        time.sleep(3)
                         self.send(":l5")
                         #debug write files
                         #self.logfile = open('dataout.txt', 'w')
