@@ -1,6 +1,7 @@
 import threading
 import serial
 import time
+import os.path
 
 
 #import sys
@@ -28,10 +29,11 @@ class BmsLion:
         self.terminate_flag = 0
         self.running_flag = 0
         self.commands = ['v','t','b','c','e','s']
-        self.devices = ['/dev/ttyACM0','/dev/ttyACM1','/dev/ttyACM2','/dev/tty.usbmodem01']
+        self.devices = ['/dev/ttyACM0','/dev/ttyACM1','/dev/ttyUSB0','/dev/tty.usbmodem01','/home/kortas/minicom.cap']
         self.dev = ''
         self.logfile = ''
         self.logfileH = ''
+        self.filemode = False
     
     #join
     def terminate(self):
@@ -84,7 +86,12 @@ class BmsLion:
             if not self.connected:
                 for self.dev in self.devices:
                     try:
-                        #time.sleep(1)
+                        if os.path.isfile(self.dev):
+                            self.connected = 1
+                            self.connection = open(self.dev)
+                            self.datalayer.status = 'connected to file '+self.dev
+                            self.filemode = True
+                            break
                         self.datalayer.status = 'opening '+self.dev
                         self.connection = serial.Serial(port=self.dev, baudrate=115200, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE,timeout=10,xonxoff=False, rtscts=False, dsrdtr=False)
                         self.connected = 1
@@ -114,9 +121,17 @@ class BmsLion:
                 continue
                 
             try:
-                #while self.connection.inWaiting() > 0:
-                received = self.connection.readline()
-                line = received.decode('ascii')
+                line = self.connection.readline()
+                
+                if self.filemode:
+                    time.sleep(1)
+                    print(line)
+                    line += "\n"
+                else:
+                    line = line.decode('ascii')
+                #line = received.decode('ascii')
+                    
+                    
                 
                 #debug
                 #self.logfile.write(received.decode('ascii'))
@@ -125,7 +140,7 @@ class BmsLion:
                 #self.logfileH.flush()
                 
                 self.datalayer.receivecounter += 1
-                self.parse(received)
+                #self.parse(line)
                 
             except Exception as e:
                 self.datalayer.status = 'I/O problem (readline) '+self.dev
@@ -135,7 +150,9 @@ class BmsLion:
                 print('I/O problem '+self.dev)
                 print(str(e))
                 self.connected = 0
+                
                 self.connection.close()
+                
                 time.sleep(1)
         
         #cleanup only if connection was established...
@@ -157,7 +174,6 @@ class BmsLion:
         LionMail.schedule()
     
         if len(line)>0:
-            line = line.decode('ascii')
             if 'E' == line[:1]:
                 self.datalayer.message = 'error: PEC...'
                 return

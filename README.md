@@ -24,6 +24,11 @@ for Ubuntu 14.04:
     source bin/activate
 ~~~
 
+## Running the application
+
+source LS_env/bin/activate
+./manage.py runserver -R -p 8080
+
 ## Migration the Database
 
 for a new Project:
