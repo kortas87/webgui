@@ -1,7 +1,6 @@
 from flask import render_template, session, redirect, url_for, current_app
 from . import main
 from ..lionlib import * 
-from ..bmslion import BmsLion
 import time
 
 from matplotlib import pyplot as plt
@@ -9,11 +8,12 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 from matplotlib.dates import AutoDateFormatter, AutoDateLocator, date2num
 
+import config
 
 
 @main.route('/', methods=['GET','POST'])
 def index():
-    return render_template('default.html', datalayer = BmsLion.self.datalayer)
+    return render_template('default.html', datalayer = config.modules['BmsLion']['obj'].datalayer)
 
 @main.route('/bms')
 @main.route('/bms/<param>')
@@ -24,9 +24,12 @@ def GET_page(param=None):
         BmsLion.self.thread.join()
     if param == "start":
         BmsLion.self.start()  
-       
-    #return render_template('default_empty.html', messages='test')
-    return render_template('default.html', datalayer = BmsLion.self.datalayer)
+    
+    if (config.modules['BmsLion']['enabled']):
+        return render_template('default.html', datalayer = config.modules['BmsLion']['obj'].datalayer)
+    else:
+        return render_template('error.html', msg='Module BmsLion is not running. <a href="/bms/start">start</a> <a href="/bms/kill">kill</a>')
+    
 
 @main.route('/data/<param>/<page>')
 def GET_data(param, page):
@@ -55,12 +58,15 @@ def GET_data(param, page):
    
 #    BmsLion.self.datalayer.uptime = int(time.time() - uptime)
     
-    return render_template(page+'_data.html', datalayer = BmsLion.self.datalayer)
+    return render_template(page+'_data.html', datalayer = config.modules['BmsLion']['obj'].datalayer)
 
 @main.route('/view/<page>')
 def GET_view(page):
+    if (config.modules['BmsLion']['enabled']):
+        return render_template(page+'.html', datalayer = config.modules['BmsLion']['obj'].datalayer)
+    else:
+        return render_template('error.html', msg='Module BmsLion is not running. <a href="/bms/start">start</a> <a href="/bms/kill">kill</a>')
     
-    return render_template(page+'.html', datalayer = BmsLion.self.datalayer)
 
 @main.route('/fig/<param1>/<param2>')
 def GET_plot(param1="1", param2="2"):
