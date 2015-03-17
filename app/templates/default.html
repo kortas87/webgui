@@ -24,7 +24,7 @@
           <li><a onClick="loadView('view_status')" href="#">status</a></li>
           <li><a onClick="loadView('view_charts')" href="#">charts</a></li>
           <li><a onClick="loadView('view_settings')" href="#">settings</a></li>
-          <li><a href="#"  title="{{datalayer.linux}}" onClick="confirm('You really want to shut down the server?\n\n{{datalayer.linux}}') ? lionSend('poweroff',null) : false">power off</a></li>
+          <li><a href="#"  title="{{datalayer.linux}}" onClick="confirm('You really want to shut down the server?\n\n{{datalayer.linux}}') ? serverSend('poweroff',null) : false">power off</a></li>
       </ul>
     </div>
     
@@ -52,13 +52,17 @@
     </div>
 
 </div>
-<span id="current-view">view_status</span>
+
+<span id="current-view">view_modules</span>
 <div id="alarm_stackmaxcell"></div>
+
+<span id="alertShown"></span>
+<span id="alert"></span>
 
 <div id="container">
 
-
-{% include "view_status.html" %}
+<!--for changing default view do not forget to change <span id="current-view">...</span> !-->
+{% include "view_modules.html" %}
 
 
 </div>

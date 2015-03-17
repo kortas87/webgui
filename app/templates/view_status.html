@@ -7,7 +7,25 @@
         <tr>
             <td>CPU V3.3:</td>
             <td><span id="cpuV33">?</span>V</td>
-        </tr>    
+        </tr>
+        
+        <tr>
+            <td>AI0:</td>
+            <td><span id="cpuAI0"></span> (<span id="cpuAI0calc"></span>C)</td>
+        </tr>
+        <tr>
+            <td>AI1:</td>
+            <td><span id="cpuAI1"></span> (<span id="cpuAI1calc"></span>C)</td>
+        </tr>
+        <tr>
+            <td>AI2:</td>
+            <td><span id="cpuAI2"></span> (<span id="cpuAI2calc"></span>C)</td>
+        </tr>
+        <tr>
+            <td>AI3:</td>
+            <td><span id="cpuAI3"></span> (<span id="cpuAI3calc"></span>)</td>
+        </tr>
+        
         <tr>
           <td>Last message</td>
           <td id="message">{{datalayer.message}}</td>
@@ -42,13 +60,16 @@
       <form>
           <ul>
               <li>eeprom (read address 16bit):</li>
-              <li><input size="88" type="text" id="eepromIN" value=""><input onclick="lionEeprom()" type="button" value="send"></input></li>
+              <li><input size="88" type="text" id="eepromIN" value=""><input onclick="serverSend(':e'+document.getElementById('eepromIN').value)" type="button" value="send"></input></li>
               <li><input readonly="true" size="88" type="text" id="eepromOUT" value=""><input onclick="hex2a()" type="button" value="ascii"><input onclick="struct()" type="button" value="struct"></input></li>
           </ul>
       </form>
     </div>
     
-    <button onClick="lionSend(':b1')">balancing RUN TEST</button>
-      <button onClick="lionSend(':b0')">balancing STOP</button>
+    <button onClick="serverSend(':bf')">balancing RUN TEST</button>
+    <button onClick="serverSend(':b1')">balancing RUN A</button>
+    <button onClick="serverSend(':b2')">balancing RUN B</button>
+    <button onClick="serverSend(':b3')">balancing RUN C</button>
+    <button onClick="serverSend(':b0')">balancing STOP</button>
 
 </div><!-- status div -->

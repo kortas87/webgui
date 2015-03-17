@@ -17,6 +17,5 @@ function view_gauge() {
     gauge1.draw(Math.round(parseFloat(document.getElementById("stacksoc").innerHTML)));
     gauge4.draw(Math.round(parseFloat(document.getElementById("stackvolt").innerHTML)));
   }
-
 }
 

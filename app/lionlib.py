@@ -30,6 +30,7 @@ class Datalayer:
     def __init__(self):
         self.sqllog = 0
         self.message = ""
+        self.alert = ""
         self.uptime = 0
         self.Modules = [Module() for x in range(self.MAX_MODULES)]
         self.cputemp = 0
@@ -49,6 +50,9 @@ class Datalayer:
         self.stacksoc = 0
         self.stackI = 0
         self.stackpower = 0
+        self.cpuAI = [-1,-1,-1,-1]
+        self.cpuAIcalc = [-1,-1,-1,-1]
         self.status = 'not connected'
         self.eepromOUT = 'no data received yet'
+        self.settingsOUT = 'no data received yet'
         self.linux = platform.platform()

@@ -1,4 +1,2 @@
-{% include "data_only_topbar.html" %}{% for module in datalayer.Modules %}{% set outer_index = loop.index0 %}{% for cell in module.Cells %}
-vm{{outer_index}}c{{loop.index0}}={{ '%1.4f' | format( (cell.volt/10000)|round(4) )}}
-tm{{outer_index}}c{{loop.index0}}={{((cell.temp-27315)/100)}}
-{% endfor %}{% endfor %}
+{% include "data_only_topbar.html" %}
+settingsOUT={{datalayer.eepromOUT}}

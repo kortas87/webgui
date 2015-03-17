@@ -134,7 +134,8 @@ div.module div.temperature {
 .menu-top-strip ul,
 .stack-top-strip ul,
 .module-top-strip ul,
-.eeprom ul {
+.eeprom ul,
+.nobullet {
   list-style-type: none;
   display: inline;
 }
@@ -185,15 +186,46 @@ div.module div.module_title {
 }
 
 .module_set {
-  
+
+}
+
+.cell_set_wrapper {
+  border: 0px white solid;
+  float: left;
+}
+
+.cell_set_caption {
+  font-weight: bold;
+  text-align: center;
+}
+.cellV_set span {
+  display: none;
+}
+.cellV_set:hover {
+  background: grey !important;
 }
 .cellV_set {
-
+  width: 50px;
+  height: 25px;
+  background: #fff;
+  margin: 0 2px 2px 0;
+  cursor: pointer; cursor: hand;
+}
+.cellT_set span {
+  display: none;
+}
+.cellT_set:hover {
+  background: grey !important;
 }
 .cellT_set {
-
+  width: 50px;
+  height: 25px;
+  background: #fff;
+  margin: 0 2px 0 0;
+  cursor: pointer; cursor: hand;
 }
 
-.module_index_set {
-
+#alert, #alertShown {
+  display: none;
 }
+

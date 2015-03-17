@@ -49,31 +49,51 @@ class BmsLion:
         
         strtowrite = what+"\n"
         
+        cmd = what[1:2]
+        data = what[2:]
+        
+        #we need to send data in packages of max size 64 chars (32bytes)
+        #address 2bytes (4chars)
+        #command + colon + linefeed (can include \r) 2bytes (4chars)
+        #data then max 28bytes (56chars)
+        if (cmd == "e"):
+            if ((len(data) % 2) != 0):
+                self.datalayer.alert = "Data is not divisible by 2"
+                return
+            #if len(data) > 68:
+            #    self.datalayer.settingsOUT = self.datalayer.eepromOUT = "data too long (max 32 bytes)"
+            #    return
+            if len(data) < 4:
+                self.datalayer.alert = "Data is too short (need at least address 16bit)!"
+                return
+            try:
+                test = int(what[2:],16)
+            except Exception as e:
+                self.datalayer.alert = "Data are not in hex format!"
+                return
+            
+            #we need to split cmd to several chunks because of the usb limit 64 chars... (TODO better settings for m-stack USB?)
+            if len(data) > 60:
+                address = data[:4]
+                rest = data[4:]
+                #data length 56 char + 4 char address + 2 char cmd + 1 char \n
+                length = 56
+                length_bytes = 28
+                for idx,chunk in enumerate(rest[0+i:length+i] for i in range(0, len(rest), length)):
+                    address_new = "{:0>4x}".format(int(address,16) + length_bytes*idx)
+                    strtowrite = ":" + cmd + address_new + chunk + "\n"
+                    #tx to cpu module
+                    for char in strtowrite:
+                        self.connection.write(char.encode())
+                        self.connection.flush()
+                    time.sleep(0.1)
+                return
+        
+        #tx to cpu module
         for char in strtowrite:
             self.connection.write(char.encode())
             self.connection.flush()
 
-            
-    #send cmd EEPROM
-    def sendEEPROM(self, what):
-        self.datalayer.eepromOUT = 'nothing received yet'
-        if len(what[2:]) % 2 != 0:
-            self.datalayer.eepromOUT = "data is not divisible by 2"
-            return
-        if len(what[2:]) > 68:
-            self.datalayer.eepromOUT = "data too long (max 32 bytes)"
-            return
-        if len(what[2:]) < 4:
-            self.datalayer.eepromOUT = "data is too short (need at least address 16bit)"
-            return
-        try:
-            test = int(what[2:],16)
-        except Exception as e:
-            self.datalayer.eepromOUT = "data are not in hex format"
-            return
-        
-        #perform READ or WRITE based on data length
-        self.send(what)
         
     def run(self):
         self.running_flag = 1
@@ -266,6 +286,14 @@ class BmsLion:
                             self.datalayer.eepromNewest = value
                         if index == 7:
                             self.datalayer.cpuPECpercent = int(value, 16) 
+                        if index == 8:
+                            self.datalayer.cpuAI[0] = int(value, 16)
+                        if index == 9:
+                            self.datalayer.cpuAI[1] = int(value, 16)
+                        if index == 10:
+                            self.datalayer.cpuAI[2] = int(value, 16)
+                        if index == 11:
+                            self.datalayer.cpuAI[3] = int(value, 16)
                     #stack information
                     elif cmd == 's':
                         if index == 0:
@@ -287,6 +315,14 @@ class BmsLion:
                             if self.datalayer.stackI > 0x7FFFFFFF:
                                 self.datalayer.stackI -= 0x100000000
                             self.datalayer.stackpower = self.datalayer.stackvolt/100 * self.datalayer.stackI/10000
+                        if index == 8:
+                            self.datalayer.cpuAIcalc[0] = int(value, 16)
+                        if index == 9:
+                            self.datalayer.cpuAIcalc[1] = int(value, 16)
+                        if index == 10:
+                            self.datalayer.cpuAIcalc[2] = int(value, 16)
+                        if index == 11:
+                            self.datalayer.cpuAIcalc[3] = int(value, 16)
 
                     elif cmd == 'b':
                         #decode balancing bits
