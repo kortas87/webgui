@@ -15,6 +15,13 @@ import config
 def index():
     return render_template('default.html', datalayer = config.modules['BmsLion']['obj'].datalayer)
 
+@main.route('/<module>/<key>/<name>/<value>')
+def GET_module(param=None):
+    if (config.modules[module]['enabled']):
+        config.modules[module].http_get(key, name, value);
+    else:
+        return render_template('error.html', msg='Given module does not exist.')
+
 @main.route('/bms')
 @main.route('/bms/<param>')
 def GET_page(param=None):
