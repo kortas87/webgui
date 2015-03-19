@@ -37,8 +37,8 @@ webgui_modules = {}
 webgui_modules['BmsLion'] = [
     '/dev/ttyACM0','/dev/ttyACM1',
     '/dev/ttyUSB0',
-    '/dev/tty.usbmodem01',
-    '/home/kortas/minicom.cap']
+    '/dev/tty.usbmodem01',]
+    #'/home/kortas/minicom.cap']
     
 webgui_modules['SendMail'] = {
     "SMTPserver":'smtp.seznam.cz', 

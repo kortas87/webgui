@@ -2,10 +2,8 @@ import threading
 import serial
 import time
 import os.path
-
-import app.lionlib
-
 import re
+import platform
 
 
 # separated process for reading serial port and parsing data
@@ -44,7 +42,7 @@ class BmsLion:
     
     #fork    
     def start(self):
-        self.datalayer = app.lionlib.Datalayer()
+        self.datalayer = Datalayer()
         self.datalayer.sqllog = 0
         
         if 0 == self.running_flag:
@@ -126,14 +124,8 @@ class BmsLion:
                         #print(self.connection.getSettingsDict())
                         self.datalayer.receivecounter = 0
                         self.datalayer.status = 'connected to '+self.dev
-                        print("first wait")
-                        time.sleep(3)
                         self.send(":l5")
-                        print("2nd wait")
-                        time.sleep(3)
-                        self.send(":l5")
-                        print("3rd wait")
-                        time.sleep(3)
+                        time.sleep(0.3)
                         self.send(":l5")
                         #debug write files
                         #self.logfile = open('dataout.txt', 'w')
@@ -156,6 +148,7 @@ class BmsLion:
                     #line += "\n"
                 else:
                     line = line.decode('ascii')
+                    
                 #line = received.decode('ascii')
                     
                     
@@ -239,15 +232,15 @@ class BmsLion:
                 #bits 0-25
                 if mod == 0:
                     self.datalayer.eepromOUT = str(line)
-                    print('EEPROM(1/3'+values)
+                    print('EEPROM(1/3'+line)
                 #bit 25-50
                 if mod == 1:
                     self.datalayer.eepromOUT += str(line)
-                    print('EEPROM(2/3)'+values)
+                    print('EEPROM(2/3)'+line)
                 #bit 50-64
                 if mod == 2:
                     self.datalayer.eepromOUT += str(line)
-                    print('EEPROM(3/3)'+values)
+                    print('EEPROM(3/3)'+line)
                 # next bits?
                 if mod == 3:
                     self.datalayer.eepromOUT += str(line)
@@ -255,7 +248,7 @@ class BmsLion:
                 #write mode output
                 if mod == 9:
                     self.datalayer.eepromOUT = str(line)
-                    print('EEPROM'+values)
+                    print('EEPROM'+line)
             
             #divide received string by n = 4
             n = 4

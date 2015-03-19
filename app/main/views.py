@@ -1,6 +1,5 @@
 from flask import render_template, session, redirect, url_for, current_app
 from . import main
-from ..lionlib import * 
 import time
 
 from matplotlib import pyplot as plt
@@ -9,6 +8,23 @@ from matplotlib.figure import Figure
 from matplotlib.dates import AutoDateFormatter, AutoDateLocator, date2num
 
 import config
+
+
+@main.route('/send/<param>/<randomkey>')
+def GET_send(param='',randomkey=None):
+
+    #received command to be executed by python
+    if param == "poweroff":  
+        appexit()
+        print ("poweroff")
+        call(["poweroff"])
+    
+    #received string which needs to be send to CPU module
+    elif param[:1] == ":":
+        print (param)
+        config.modules['BmsLion']['obj'].send(param)
+    
+    return ('', 204)
 
 
 @main.route('/', methods=['GET','POST'])
@@ -26,11 +42,11 @@ def GET_module(param=None):
 @main.route('/bms/<param>')
 def GET_page(param=None):
 
-    if param == "kill":
-        BmsLion.self.terminate()  
-        BmsLion.self.thread.join()
-    if param == "start":
-        BmsLion.self.start()  
+    #if param == "kill":
+    #    BmsLion.self.terminate()  
+    #    BmsLion.self.thread.join()
+    #if param == "start":
+    #    BmsLion.self.start()  
     
     if (config.modules['BmsLion']['enabled']):
         return render_template('default.html', datalayer = config.modules['BmsLion']['obj'].datalayer)
