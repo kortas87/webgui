@@ -299,6 +299,8 @@ class BmsLion:
                             self.datalayer.cpuAI[2] = int(value, 16)
                         if index == 11:
                             self.datalayer.cpuAI[3] = int(value, 16)
+                        if index == 12:
+                            self.datalayer.cpuAI[5] = int(value, 16)
                     #stack information
                     elif cmd == 's':
                         if index == 0:
@@ -328,6 +330,8 @@ class BmsLion:
                             self.datalayer.cpuAIcalc[2] = int(value, 16)
                         if index == 11:
                             self.datalayer.cpuAIcalc[3] = int(value, 16)
+                        if index == 12:
+                            self.datalayer.cpuAIcalc[5] = int(value, 16)
 
                     elif cmd == 'b':
                         #decode balancing bits
@@ -408,8 +412,8 @@ class Datalayer:
         self.stacksoc = 0
         self.stackI = 0
         self.stackpower = 0
-        self.cpuAI = [-1,-1,-1,-1]
-        self.cpuAIcalc = [-1,-1,-1,-1]
+        self.cpuAI = [-1,-1,-1,-1,-1,-1]
+        self.cpuAIcalc = [-1,-1,-1,-1,-1,-1]
         self.status = 'not connected'
         self.eepromOUT = 'no data received yet'
         self.settingsOUT = 'no data received yet'
