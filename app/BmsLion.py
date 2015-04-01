@@ -350,7 +350,8 @@ class BmsLion:
                                         
                 except Exception as e:
                     self.datalayer.message = 'Could not convert hex to int '+ str(value).replace('\n',' ')+', '+str(e).replace('\n',' ')
-                    print(self.datalayer.message)
+                    #print(self.datalayer.message)
+                    print ('line: '+line);
                     print ('exception '+str(e)+'mod:'+str(mod)+' index: '+str(index))
                     return
             
@@ -418,3 +419,5 @@ class Datalayer:
         self.eepromOUT = 'no data received yet'
         self.settingsOUT = 'no data received yet'
         self.linux = platform.platform()
+        self.console = ""
+        self.consoleCounter = 0

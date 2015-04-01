@@ -227,6 +227,7 @@ function settingsCreate() {
   
   settings += decimalToHexLittle(document.getElementById("settingsBetaCELL").value, 4);
   settings += decimalToHexLittle(document.getElementById("settingsBetaCPU").value, 4);
+  settings += decimalToHexLittle(document.getElementById("settingsRefNTC").value, 4);
   settings += decimalToHexLittle(document.getElementById("settingsChemistry").value, 2);
   settings += decimalToHexLittle(document.getElementById("settingsCurrentSensor").value, 2);
   settings += decimalToHexLittle(document.getElementById("settingsCurrentSensorP1").value, 2);
@@ -301,12 +302,13 @@ function settingsLoad() {
     
     document.getElementById("settingsBetaCELL").value = parseLittleEndian(data.substr(96,4),16);
     document.getElementById("settingsBetaCPU").value = parseLittleEndian(data.substr(100,4),16);
-    document.getElementById("settingsChemistry").value = parseLittleEndian(data.substr(104,2),16);
-    document.getElementById("settingsCurrentSensor").value = parseLittleEndian(data.substr(106,2),16);
-    document.getElementById("settingsCurrentSensorP1").value = parseLittleEndian(data.substr(108,2),16);
-    document.getElementById("settingsCurrentSensorP2").value = parseLittleEndian(data.substr(110,2),16);
-    document.getElementById("settingsLog").value = data.substr(112,2);
-    document.getElementById("settingsSD").value = data.substr(114,2);
+    document.getElementById("settingsRefNTC").value = parseLittleEndian(data.substr(104,4),16);
+    document.getElementById("settingsChemistry").value = parseLittleEndian(data.substr(108,2),16);
+    document.getElementById("settingsCurrentSensor").value = parseLittleEndian(data.substr(110,2),16);
+    document.getElementById("settingsCurrentSensorP1").value = parseLittleEndian(data.substr(112,2),16);
+    document.getElementById("settingsCurrentSensorP2").value = parseLittleEndian(data.substr(114,2),16);
+    document.getElementById("settingsLog").value = data.substr(116,2);
+    document.getElementById("settingsSD").value = data.substr(118,2);
     
     settingsRefresh();
   } else {
@@ -497,4 +499,12 @@ function parseLittleEndian(hex) {
     }
     return result;
 };
+
+function consoleSubmit() {
+    var a = document.getElementById('consoleINPUT').value;
+    serverSend(a);
+    var elem = document.getElementById('consoleOUTPUT');
+    elem.innerHTML+='> '+a+'<br>';
+    elem.scrollTop = elem.scrollHeight;
+}
 

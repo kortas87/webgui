@@ -229,3 +229,10 @@ div.module div.module_title {
   display: none;
 }
 
+#consoleOUTPUT {
+  width: 800px;
+  height: 300px;
+  background: black;
+  color: #0f0;
+  overflow: auto;
+}
