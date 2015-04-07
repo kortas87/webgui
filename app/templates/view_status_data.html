@@ -19,5 +19,4 @@ cpuAI5calc={{(datalayer.cpuAIcalc[5]/1000)|round(3)}}
 sqllog={{datalayer.sqllog}}
 cputemp={{(datalayer.cputemp-27315)/100}}
 status={{datalayer.status}}
-console={{datalayer.console}}
-consoleCounter={{datalayer.consoleCounter}}
+consoleHTML={{ datalayer.getConsoleHTML()|safe }}

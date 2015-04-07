@@ -4,7 +4,7 @@ import time
 import os.path
 import re
 import platform
-
+import html
 
 # separated process for reading serial port and parsing data
 class BmsLion:
@@ -23,6 +23,7 @@ class BmsLion:
         self.logfile = ''
         self.logfileH = ''
         self.filemode = False
+        self.clearFileFlag = False
     
     #join
     def terminate(self):
@@ -56,6 +57,8 @@ class BmsLion:
         print ("BmsLion module started")
     
     def send(self, what):
+        
+        self.clearFileFlag = True
         
         strtowrite = what+"\n"
         
@@ -151,7 +154,6 @@ class BmsLion:
                     
                 #line = received.decode('ascii')
                     
-                    
                 
                 #debug
                 #self.logfile.write(received.decode('ascii'))
@@ -204,9 +206,24 @@ class BmsLion:
         else:
             #self.datalayer.message = 'zero length data received'
             return
+            
+        # info output
+        if cmd == '>':
+          self.datalayer.consoleHTML += cmd + html.escape(line) +'<br />' 
+        
+        # receiving file
+        if cmd == '@':
+          if self.clearFileFlag:
+              self.datalayer.allfile = ""
+              self.clearFileFlag = False
+              
+          self.datalayer.allfile += line+"\n"
+          # debug:
+          #self.datalayer.consoleHTML += cmd + html.escape(line) +'<br />' 
+        
         
         #check if correct cmd received
-        if any(cmd == s for s in self.commands):
+        elif any(cmd == s for s in self.commands):
             
             #module    
             if len(line)>0:
@@ -359,7 +376,7 @@ class BmsLion:
 
         else:
             self.datalayer.message = 'uknown command received' #+line
-            print (self.datalayer.message)
+            #print (self.datalayer.message)
             print (line)
         
         return
@@ -390,6 +407,11 @@ class Module:
 class Datalayer:
     MAX_MODULES = 16
     
+    def getConsoleHTML(self):
+        text = self.consoleHTML
+        self.consoleHTML = ""
+        return text
+    
     def __init__(self):
         self.sqllog = 0
         self.message = ""
@@ -419,5 +441,7 @@ class Datalayer:
         self.eepromOUT = 'no data received yet'
         self.settingsOUT = 'no data received yet'
         self.linux = platform.platform()
-        self.console = ""
-        self.consoleCounter = 0
+        self.console     = ""
+        self.consoleHTML = ""
+        self.filelink = ""
+        self.allfile = ""

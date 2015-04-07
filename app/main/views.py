@@ -83,6 +83,12 @@ def GET_data(param, page):
     
     return render_template(page+'_data.html', datalayer = config.modules['BmsLion']['obj'].datalayer)
 
+@main.route('/download/<page>')
+def GET_download(page):
+    datalayer = config.modules['BmsLion']['obj'].datalayer
+    return datalayer.allfile
+    
+
 @main.route('/view/<page>')
 def GET_view(page):
     if (config.modules['BmsLion']['enabled']):

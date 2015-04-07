@@ -99,6 +99,16 @@ function lion() {
             }
           }
           
+          //console
+          if (line[0].substring(0,11) == "consoleHTML") {
+            var console = document.getElementById("consoleOUTPUT");
+            if (line[1].length > 0) {
+              console.innerHTML += line[1];
+              document.getElementById('consoleOUTPUT').scrollTop = document.getElementById('consoleOUTPUT').scrollHeight;
+            }
+          }
+          
+          
           
           //CSS error USB
           if (line[0].substring(0,6) == "status") {
@@ -504,7 +514,7 @@ function consoleSubmit() {
     var a = document.getElementById('consoleINPUT').value;
     serverSend(a);
     var elem = document.getElementById('consoleOUTPUT');
-    elem.innerHTML+='> '+a+'<br>';
+    elem.innerHTML+= a+'<br />';
     elem.scrollTop = elem.scrollHeight;
 }
 

@@ -1,12 +1,12 @@
 
 
 <!-- vars for console -->
-<span id="consoleCounter" style="display:none"></span>
-<span id="console" style="display:none"></span>
+Download: <a href="/download/output_file.txt" target="new"> output_file.txt </a><br />
+<span id="consoleHTML" style="display:none"></span>
 <div id="consoleOUTPUT">
-> real console...<br>
 </div>
-<input size="88" type="text" id="consoleINPUT" value=""><input onclick="consoleSubmit();" type="button" value=" SEND ">
+
+<input size="88" type="text" id="consoleINPUT" value="" onkeydown="if (event.keyCode == 13) consoleSubmit();"><input type="button" onclick="consoleSubmit();" value=" SEND ">
 
 <br><br>
 
