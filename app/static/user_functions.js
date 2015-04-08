@@ -14,8 +14,8 @@ function view_gauge() {
     gauge4 = new Gauge("canvas4", {'mode':'needle', 'range': {'min':0, 'max':140 } });
     viewGaugeInit = false;
   } else {
-    gauge1.draw(Math.round(parseFloat(document.getElementById("stacksoc").innerHTML)));
-    gauge4.draw(Math.round(parseFloat(document.getElementById("stackvolt").innerHTML)));
+    gauge1.draw(Math.round(parseFloat(document.getElementById("s6").innerHTML)));
+    gauge4.draw(Math.round(parseFloat(document.getElementById("s5").innerHTML)));
   }
 }
 

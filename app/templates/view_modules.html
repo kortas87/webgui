@@ -1,4 +1,4 @@
-{% for module in datalayer.Modules %}
+{% for module in datalayer.Modules[:datalayer.size] %}
 <div class="module" id="m{{loop.index0}}">
   {% set outer_index = loop.index0 %}
   

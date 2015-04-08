@@ -249,18 +249,11 @@ class BmsLion:
                 #bits 0-25
                 if mod == 0:
                     self.datalayer.eepromOUT = str(line)
-                    print('EEPROM(1/3'+line)
+                    print('EEPROM:'+line)
                 #bit 25-50
-                if mod == 1:
-                    self.datalayer.eepromOUT += str(line)
-                    print('EEPROM(2/3)'+line)
-                #bit 50-64
-                if mod == 2:
-                    self.datalayer.eepromOUT += str(line)
-                    print('EEPROM(3/3)'+line)
-                # next bits?
-                if mod == 3:
-                    self.datalayer.eepromOUT += str(line)
+                #if mod == 1:
+                #   self.datalayer.eepromOUT += str(line)
+                #    print('EEPROM(2/3)'+line)
                     
                 #write mode output
                 if mod == 9:
@@ -276,6 +269,8 @@ class BmsLion:
                 try:
                     #voltage
                     if cmd == 'v':
+                        if (mod + 1) > self.datalayer.size:
+                            self.datalayer.size = mod + 1
                         #if we have not received full line then do not convert values
                         #check at least divisibility
                         if val_length % 2 == 0:
@@ -413,6 +408,7 @@ class Datalayer:
         return text
     
     def __init__(self):
+        self.size = 1
         self.sqllog = 0
         self.message = ""
         self.alert = ""
