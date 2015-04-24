@@ -8,4 +8,5 @@ s6={{'%1.2f' | format(datalayer.stacksoc/100)}}%
 s7={{'%3.2f' | format(datalayer.stackI/10000)}}
 s8={{ '%1.2f' | format(datalayer.stackpower/1000)}}
 s9={{ (datalayer.cpuPECpercent/100)|round|int}}
+s10={{'%1.1f' | format( ((datalayer.stackmaxcell-datalayer.stackmincell)/10)|round(1) )}}
 alert={{datalayer.alert}}
