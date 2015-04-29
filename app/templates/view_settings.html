@@ -13,24 +13,51 @@ tm{{outer_index}}cs{{loop.index0}}=1{% endfor %}{% endfor %}-->
           </li>
       </ul>
   
-  <ul class="nobullet">
-      <li><label for="settingsBetaCELL">Thermistor BETA value (LMMs)</label> <input onfocusout="settingsCreate();" size="10" type="text" id="settingsBetaCELL" value=""></li>
-      <li><label for="settingsBetaCPU">Thermistor BETA value (LCM)</label>    <input onfocusout="settingsCreate();" size="10" type="text" id="settingsBetaCPU" value=""></li>
-      <li><label for="settingsRefNTC">NTC ref voltage (LMMs)</label>    <input onfocusout="settingsCreate();" size="10" type="text" id="settingsRefNTC" value=""></li>
-      <li><label title="0 = LiCoO2, Lithium Cobalt Oxide
+  <table>
+      <tr>
+          <td><label for="settingsBetaCELL">Thermistor BETA value (LMMs)</label></td>
+          <td><input onfocusout="settingsCreate();" size="10" type="text" id="settingsBetaCELL" value=""></td>
+      </tr>
+      <tr>
+          <td><label for="settingsBetaCPU">Thermistor BETA value (LCM)</label></td>
+          <td><input onfocusout="settingsCreate();" size="10" type="text" id="settingsBetaCPU" value=""></td>
+      </tr>
+      <tr>
+          <td><label for="settingsRefNTC">NTC ref voltage (LMMs)</label></td>
+          <td><input onfocusout="settingsCreate();" size="10" type="text" id="settingsRefNTC" value=""></td>
+      </tr>
+      <tr>
+          <td><label title="0 = LiCoO2, Lithium Cobalt Oxide
 1 = LiMn2O4, Lithium Manganese Oxide
 2 = LiFePO4, Lithium Iron Phosphat
 3 = LiNiMnCoO2, Lithium Nickel Manganese Cobalt Oxide
 4 = LiNiCoAlO2, Lithium Nickel Cobalt Aluminium Oxide
-5 = LTO" for="settingsChemistry">Chemistry <input onfocusout="settingsCreate();" size="10" type="text" id="settingsChemistry" value=""></li>
-      <li><label title="0 = none
+5 = LTO" for="settingsChemistry">Chemistry </label></td>
+          <td><input onfocusout="settingsCreate();" size="10" type="text" id="settingsChemistry" value=""></td>
+      </tr>
+      <tr>
+          <td><label title="0 = none
       1 = hall sensor 0-5V
-      2 = Isabellen CAN bus" for="settingsCurrentSensor">Current sensor type</label>    <input onfocusout="settingsCreate();" size="10" type="text" id="settingsCurrentSensor" value=""></li>
-      <li><label for="settingsCurrentSensorP1">Current sensor parameter 1</label>    <input onfocusout="settingsCreate();" size="10" type="text" id="settingsCurrentSensorP1" value=""></li>
-      <li><label for="settingsCurrentSensorP2">Current sensor parameter 2</label>    <input onfocusout="settingsCreate();" size="10" type="text" id="settingsCurrentSensorP2" value=""></li>
-      <li><label title="bits 0-7: USB, UART, SDCARD, not used, not used, ERROR, WARNING, DEBUG" for="settingsLog">Log parameters (hex)</label>    <input onfocusout="settingsCreate();" size="10" type="text" id="settingsLog" value=""></li>
-      <li><label title="bits 0-7: ENABLED" for="settingsSD">SD card parameters (hex)</label>    <input onfocusout="settingsCreate();" size="10" type="text" id="settingsSD" value=""></li>
-  </ul>
+      2 = Isabellen CAN bus" for="settingsCurrentSensor">Current sensor type</label></td>
+          <td><input onfocusout="settingsCreate();" size="10" type="text" id="settingsCurrentSensor" value=""></td>
+      </tr>
+      <tr>
+          <td><label for="settingsCurrentSensorP1">Current sensor param#1</label></td>
+          <td><input onfocusout="settingsCreate();" size="10" type="text" id="settingsCurrentSensorP1" value=""></td>
+      </tr>
+      <tr>
+          <td><label for="settingsCurrentSensorP2">Current sensor param#2</label></td>
+          <td><input onfocusout="settingsCreate();" size="10" type="text" id="settingsCurrentSensorP2" value=""></td>
+      </tr>
+      <tr>
+          <td><label title="bits 0-7: USB, UART, SDCARD, not used, not used, ERROR, WARNING, DEBUG" for="settingsLog">Log parameters (hex)</label></td>
+          <td><input onfocusout="settingsCreate();" size="10" type="text" id="settingsLog" value=""></td>
+      </tr>
+      <tr>
+          <td><label title="bits 0-7: ENABLED" for="settingsSD">SD card parameters (hex)</label></td>
+          <td><input onfocusout="settingsCreate();" size="10" type="text" id="settingsSD" value=""></td>
+      </tr>
+  </table>
   </form>
   
   

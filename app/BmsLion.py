@@ -131,7 +131,7 @@ class BmsLion:
                         time.sleep(0.3)
                         self.send(":l5")
                         #debug write files
-                        #self.logfile = open('dataout.txt', 'w')
+                        self.logfile = open('dataout.txt', 'w')
                         #self.logfileH = open('dataout.bin', 'bw')
                         #time.sleep (1)
                         break
@@ -156,9 +156,9 @@ class BmsLion:
                     
                 
                 #debug
-                #self.logfile.write(received.decode('ascii'))
+                self.logfile.write(line)
                 #self.logfileH.write(received)
-                #self.logfile.flush()
+                self.logfile.flush()
                 #self.logfileH.flush()
                 
                 self.datalayer.receivecounter += 1
@@ -167,7 +167,7 @@ class BmsLion:
             except Exception as e:
                 self.datalayer.status = 'I/O problem (readline) '+self.dev
                 #debug
-                #self.logfile.close()
+                self.logfile.close()
                 #self.logfileH.close()
                 print('I/O problem '+self.dev)
                 print(str(e))

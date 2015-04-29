@@ -34,7 +34,7 @@ function lion() {
         }
           //CSS voltage + min,max
           if (line[0].substring(0,2) == "vm") {
-            voltHeight = Math.round(300*(parseFloat(line[1])-2.4)/2);
+            voltHeight = Math.round(280*(parseFloat(line[1])-2.4)/2);
             volt = parseFloat(line[1]);
             if(voltHeight>250) {
               voltHeight = 250;
