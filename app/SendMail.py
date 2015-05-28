@@ -24,6 +24,9 @@ class SendMail:
     
     def start(self):
         print ("SendMail module started")
+    
+    def terminate(self):
+        print ("SendMail module finished")
         
     def send(self, subject = "test mail", destination = '', content = "no content"):
         if destination == '':

@@ -34,6 +34,10 @@ modules = {}
 #module configuration
 webgui_modules = {}
 
+webgui_modules['BmsLionSQL'] = {
+    'db_filename':'todo.db'
+    }
+
 webgui_modules['BmsLion'] = [
     '/dev/ttyACM0','/dev/ttyACM1',
     '/dev/ttyUSB0',

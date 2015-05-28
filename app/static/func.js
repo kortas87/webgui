@@ -242,6 +242,8 @@ function settingsCreate() {
   settings += decimalToHexLittle(document.getElementById("settingsCurrentSensor").value, 2);
   settings += decimalToHexLittle(document.getElementById("settingsCurrentSensorP1").value, 2);
   settings += decimalToHexLittle(document.getElementById("settingsCurrentSensorP2").value, 2);
+  settings += decimalToHexLittle(document.getElementById("settingsCellMin").value, 4);
+  settings += decimalToHexLittle(document.getElementById("settingsCellMax").value, 4);
   if (document.getElementById("settingsLog").value.length != 2) {
     alert("error: you have to enter Log settings correctly!");
     return;
@@ -317,8 +319,10 @@ function settingsLoad() {
     document.getElementById("settingsCurrentSensor").value = parseLittleEndian(data.substr(110,2),16);
     document.getElementById("settingsCurrentSensorP1").value = parseLittleEndian(data.substr(112,2),16);
     document.getElementById("settingsCurrentSensorP2").value = parseLittleEndian(data.substr(114,2),16);
-    document.getElementById("settingsLog").value = data.substr(116,2);
-    document.getElementById("settingsSD").value = data.substr(118,2);
+    document.getElementById("settingsCellMin").value = parseLittleEndian(data.substr(116,4),16);
+    document.getElementById("settingsCellMax").value = parseLittleEndian(data.substr(120,4),16);
+    document.getElementById("settingsLog").value = data.substr(124,2);
+    document.getElementById("settingsSD").value = data.substr(126,2);
     
     settingsRefresh();
   } else {

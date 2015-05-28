@@ -28,6 +28,7 @@ class BmsLion:
     #join
     def terminate(self):
         self.terminate_flag = 1
+        self.thread.join()
     
     def http_get(self, key, name, value):
         #module can receive GET messages
@@ -122,7 +123,10 @@ class BmsLion:
                             self.filemode = True
                             break
                         self.datalayer.status = 'opening '+self.dev
-                        self.connection = serial.Serial(port=self.dev, baudrate=115200, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE,timeout=10,xonxoff=False, rtscts=False, dsrdtr=False)
+                        br = 115200
+                        if self.dev == '/dev/ttyUSB0' or self.dev == '/dev/ttyUSB1':
+                            br = 9600
+                        self.connection = serial.Serial(port=self.dev, baudrate=br, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE,timeout=2,xonxoff=False, rtscts=False, dsrdtr=False)
                         self.connected = 1
                         #print(self.connection.getSettingsDict())
                         self.datalayer.receivecounter = 0
@@ -145,6 +149,7 @@ class BmsLion:
                 
             try:
                 line = self.connection.readline()
+                #self.connection.flushInput()
                 
                 if self.filemode:
                     time.sleep(0.1)
@@ -194,6 +199,8 @@ class BmsLion:
         
         #temp
         #LionMail.schedule()
+        
+        lineOrig = line
     
         if len(line)>0:
             if 'E' == line[:1]:
@@ -363,7 +370,7 @@ class BmsLion:
                 except Exception as e:
                     self.datalayer.message = 'Could not convert hex to int '+ str(value).replace('\n',' ')+', '+str(e).replace('\n',' ')
                     #print(self.datalayer.message)
-                    print ('line: '+line);
+                    print ('cmd: '+cmd+', line: '+lineOrig);
                     print ('exception '+str(e)+'mod:'+str(mod)+' index: '+str(index))
                     return
             

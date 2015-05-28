@@ -7,7 +7,8 @@ tm{{outer_index}}cs{{loop.index0}}=1{% endfor %}{% endfor %}-->
 
   <form>
       <ul class="nobullet">
-          <li>  <input onclick="serverSend(':e3ec0')" type="button" value="read settings from CPU module"></input><input onclick="serverSend(':e3ec0'+document.getElementById('settingsNEW').value)" type="button" value="save new setting to CPU"></input></li>
+          <li><input onclick="serverSend(':l0')" type="button" value="STOP comm"></input><input onclick="serverSend(':l5')" type="button" value="START com"></input></li>
+          <li><input onclick="serverSend(':e3ec0')" type="button" value="read settings from CPU module"></input><input onclick="serverSend(':e3ec0'+document.getElementById('settingsNEW').value)" type="button" value="save new setting to CPU"></input></li>
           <li><input readonly="true" size="160" type="text" id="settingsOUT" value=""></input><input onclick="settingsLoad()" type="button" value="load data in forms"></input></li>
           <li><input readonly="true" size="160" type="text" id="settingsNEW" value=""></input>byte length: <span id="settingsLength"></span>
           </li>
@@ -48,6 +49,14 @@ tm{{outer_index}}cs{{loop.index0}}=1{% endfor %}{% endfor %}-->
       <tr>
           <td><label for="settingsCurrentSensorP2">Current sensor param#2</label></td>
           <td><input onfocusout="settingsCreate();" size="10" type="text" id="settingsCurrentSensorP2" value=""></td>
+      </tr>
+      <tr>
+          <td><label for="settingsCellMin">Cell min limit [V]</label></td>
+          <td><input onfocusout="settingsCreate();" size="10" type="text" id="settingsCellMin" value=""></td>
+      </tr>
+      <tr>
+          <td><label for="settingsCellMax">Cell max limit [V]</label></td>
+          <td><input onfocusout="settingsCreate();" size="10" type="text" id="settingsCellMax" value=""></td>
       </tr>
       <tr>
           <td><label title="bits 0-7: USB, UART, SDCARD, not used, not used, ERROR, WARNING, DEBUG" for="settingsLog">Log parameters (hex)</label></td>
