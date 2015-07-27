@@ -6,6 +6,20 @@ body {
   margin: 0;
   padding: 0;
 }
+#refreshms {
+  background-color: red;
+}
+#container {
+  clear:both;
+}
+#refreshms,
+.nav_but {
+  height: 50px;
+}
+
+#current-view {
+  display: none;
+}
 
 .stack-top-strip {
   background: white;
@@ -13,66 +27,18 @@ body {
   font-size: 1.25em;
   height: 70px;
 }
-.menu-top-strip {
-  background: #ccc;
-  width: 100%;
-  font-size: 1.25em;
-  height: 40px;
-}
-.menu-top-strip a {
-  text-decoration: none;
-  color: #555;
-  display: block;
-  padding: 7px 15px 7px 15px;
-}
-.menu-top-strip a:hover {
-  background-color: #fc0;
-}
 
 #topbar {
-  padding: 8px 8px 8px 30px;
+  text-align: right;
 }
 
-#topbarcontainer {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 100;
-  background: #eee;
-  border-bottom: 2px yellow solid;
-}
-#container {
-  margin-top: 175px;
-}
 
-#statustablewrap {
-  border: 5px #fff solid;
-  background-color: #aaa;
-  padding: 5px;
-  width: 850px;
-  border-radius: 15px;
-  margin-left: 15px;
-}
 
 #statustable td {
   padding: 1px;
   margin: 0;
   border : 0px #eee solid;
   font-size: 0.9em;
-}
-
-div#refreshblink {
-  width: 10px;
-  height: 10px;
-  background: red;
-}
-div#refreshblinkwrapper {
-  width: 10px;
-  height: 10px;
-  margin-bottom: -10px;
-  position: relative;
-  top: -16px;
-  left: -20px;
 }
 
 h1 {
@@ -131,23 +97,52 @@ div.module div.temperature {
   background: #aaa;
 }
 
-.menu-top-strip ul,
 .stack-top-strip ul,
 .module-top-strip ul,
 .eeprom ul,
+.menu-top-strip ul,
 .nobullet {
   list-style-type: none;
   display: inline;
+  margin : 0;
 }
-
-
-.menu-top-strip ul li,
 .stack-top-strip ul li,
 .module-top-strip ul li {
   float: left;
-  margin-right: 1em;
 }
 
+#menu-top-strip ul {
+  list-style-type: none;
+  display: inline;
+  margin:0;
+}
+
+#menu-top-strip ul li {
+  margin:0;
+  float: left;
+}
+
+#menu-top-strip ul li a {
+  padding: 20px 15px 20px 15px;
+  background-color: #ddd;
+  font-size: 1.3em;
+  text-decoration: none;
+  color: #555;
+  display: block;
+  height: 25px;
+}
+#menu-top-strip a:hover {
+  background-color: #fc0;
+}
+
+#mod_status_div,
+#menu-top-strip {
+  display: none;
+}
+#menu-top-strip  {
+  height: 65px;
+  background-color: #ddd;
+}
 .stack-top-strip ul li {
   font-size: 1.15em;
   margin: 4px 10px 4px 10px;

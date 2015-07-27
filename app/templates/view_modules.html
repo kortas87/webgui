@@ -1,3 +1,24 @@
+<div class="stack-top-strip">
+      <ul>
+          <li class="barbold"><span id="s5"></span>V</li>
+          <li><span id="s6"></span></li>
+          <li class="barbold"><span id="s8"></span>kW</li>
+          <li><span id="s7"></span>A</li>
+      </ul>
+      <div style="clear:left;"></div>
+      <ul>
+          <li>Vmin:<span id="s3"></span></li>
+          <li>Vmax:<span id="s4"></span></li>
+          <li>diff:<span id="s10"></span>mV</li>
+          <li>Tmin:<span id="s1"></span></li>
+          <li>Tmax:<span id="s2"></span></li>
+      </ul>
+</div>
+
+<p style="font-size: 1.5em">
+PEC <span  id="s9"></span>%
+</p>
+
 {% for module in datalayer.Modules[:datalayer.size] %}
 <div class="module" id="m{{loop.index0}}">
   {% set outer_index = loop.index0 %}

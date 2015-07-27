@@ -25,6 +25,18 @@ class SendMail:
     def start(self):
         print ("SendMail module started")
     
+    def status(self):
+        return ""
+    
+    def menu(self):
+        return {}
+        #return {
+        #'overview':'view_modules',
+        #'gauges': 'view_gauge',
+        #'status':'view_status',
+        #'settings':'view_settings'
+        #}
+    
     def terminate(self):
         print ("SendMail module finished")
         

@@ -30,13 +30,32 @@ class BmsLion:
         self.terminate_flag = 1
         self.thread.join()
     
+    #module can receive GET messages
     def http_get(self, key, name, value):
-        #module can receive GET messages
-        return
+        # we do not check secret key
+        # we do not care about variable name
+        # we receive only string at the moment and pass it over serial (=value)
         
-    #menu items offered by module
+        if (name == "download"):
+            return self.datalayer.allfile
+        
+        self.send(value)
+        return ''
+        
+    def status(self):
+        
+        return "OK, PEC: "+str(self.datalayer.cpuPEC)+"%"
+        
+    # menu items offered by module
+    # each menu item is connected with a view
     def menu(self):
-        return {'overview':'modules', 'gauges': 'gauge', 'status':'status', 'settings':'settings'}
+        return {
+        'view_modules' :'overview',
+        'view_gauge'   :'gauges',
+        'view_status'  :'status',
+        'view_settings':'settings',
+        #'view_charts'  :'charts'
+        }
     
     #items visible on each page  
     def sticky(self):
@@ -135,7 +154,8 @@ class BmsLion:
                         time.sleep(0.3)
                         self.send(":l5")
                         #debug write files
-                        self.logfile = open('dataout.txt', 'w')
+                        datestamp = time.strftime("%Y-%m-%d_%H-%M-%S", time.gmtime())
+                        self.logfile = open('dataout_'+datestamp+'.txt', 'w')
                         #self.logfileH = open('dataout.bin', 'bw')
                         #time.sleep (1)
                         break
@@ -419,7 +439,6 @@ class Datalayer:
         self.sqllog = 0
         self.message = ""
         self.alert = ""
-        self.uptime = 0
         self.Modules = [Module() for x in range(self.MAX_MODULES)]
         self.cputemp = 0
         self.eepromNewest = 0
@@ -447,4 +466,4 @@ class Datalayer:
         self.console     = ""
         self.consoleHTML = ""
         self.filelink = ""
-        self.allfile = ""
+        self.allfile = "you need to upload file from CPU module first!"

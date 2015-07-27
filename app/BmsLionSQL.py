@@ -5,7 +5,7 @@ import os
 class BmsLionSQL:
     
     def __init__(self, configuration):
-        self.configuration = configuration
+        self.c = configuration
         
         #self.conn = pymysql.connect(host="localhost", user="root",passwd="asdf", db="lion")
         #self.cur = self.conn.cursor(pymysql.cursors.DictCursor)
@@ -14,15 +14,33 @@ class BmsLionSQL:
         
     def terminate(self):
         print ("finishing")
+    
+    def status(self):
+        return ""
 
     def start(self):
+        db_is_new = os.path.exists(self.c['db_filename'])
         
-        conn = sqlite3.connect(self.configuration['db_filename'])
-
-        if not os.path.exists(self.configuration['db_filename']):
-            print ('Need to create schema')
-        else:
-            print ('Database exists, assume schema does, too.')
+        with sqlite3.connect(self.c['db_filename']) as conn:
+            if not db_is_new:
+                print ('Creating schema')
+                with open(self.c['db_scheme'], 'rt') as f:
+                    schema = f.read()
+                print ('Inserting initial data')
+                conn.executescript(schema)
+            
+            else:
+                print ('Database exists, assume schema does, too.')
+    
+    def menu(self):
+        return {}
+        #return {
+        #'overview':'view_modules',
+        #'gauges': 'view_gauge',
+        #'status':'view_status',
+        #'settings':'view_settings'
+        #}
+    
     
     def writequery(self, valtype, index, value, ):
                  
@@ -68,3 +86,33 @@ class BmsLionSQL:
         
     def PEC(self, value):
         self.writequery(6, 0, value)
+
+
+
+#@main.route('/data/<param>/<page>')
+#def GET_data(param, page):
+#    global sql_i, uptime
+#    global uptime
+    # sql testing here at the moment...
+#    if BmsLion.self.datalayer.sqllog == 1:
+#        sql_i.stackV(BmsLion.self.datalayer.stackvolt/100)
+#        sql_i.stackI(BmsLion.self.datalayer.stackI/10000)
+#        sql_i.cellVmin(BmsLion.self.datalayer.stackmincell/10000)
+#        sql_i.cellVmax(BmsLion.self.datalayer.stackmaxcell/10000)
+#        sql_i.cellTmin((BmsLion.self.datalayer.stackmaxtemp-27315)/100)
+#        sql_i.cellTmax((BmsLion.self.datalayer.stackmintemp-27315)/100)    
+#        sql_i.SOC(BmsLion.self.datalayer.stacksoc/100)
+#        sql_i.PEC(BmsLion.self.datalayer.cpuPEC)
+#        sql_i.commit()
+    
+    #cellcounter = 0
+    #for module in BmsLion.self.datalayer.Modules:
+    #    for cell in module.Cells:
+    #        if cell.volt > 500:
+    #            sql_i.cellV(cellcounter, cell.volt/10000)
+    #            sql_i.cellT(cellcounter, (cell.temp-27315)/100 )
+    #            cellcounter +=1
+   
+#    BmsLion.self.datalayer.uptime = int(time.time() - uptime)
+#    return render_template(page+'_data.html', datalayer = config.modules['BmsLion']['obj'].datalayer)
+    

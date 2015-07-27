@@ -155,12 +155,19 @@ function lion() {
     req=new ActiveXObject("Microsoft.XMLHTTP");
   }
   if(req) {
-    document.getElementById("refreshblink").style.display="block";
+    document.getElementById("refreshms").style.backgroundColor="red";
     req.open("GET", "/data/"+Math.round(100000000*Math.random())+"/"+document.getElementById('current-view').innerHTML, true);
     req.onreadystatechange=reqComplete;
     req.send(null);
   }
-  refreshms=document.getElementById("refreshms").value;
+  refreshms=document.getElementById("refreshms").value*1000;
+  if (refreshms < 1000) {
+    refreshms = 1000;    
+  }
+  if (refreshms > 60000) {
+    refreshms = 60000;    
+  }
+  document.getElementById("refreshms").value = refreshms/1000;
   t=setTimeout("lion()",refreshms);
 }
 
@@ -181,7 +188,7 @@ function loadView(view) {
 
 
 function loadingDisappear() {
-  document.getElementById("refreshblink").style.display="none";    
+  document.getElementById("refreshms").style.backgroundColor="white";    
 }
 
 function playalarm() {
@@ -208,192 +215,10 @@ function getReadableTime(num) {
   return output;
 }
 
-function settingsCreate() {
-  
-  var word = 0;
-  var settings = "";
-  
-  //volt
-  for (var cell = 0; cell < 12; cell++) {
-    for (var module = 0; module < 16; module++) {
-      if(document.getElementById("vm"+module+"cs"+cell).innerHTML == "1") {
-        word = word | (1 << module)
-      }
-    }
-    settings += decimalToHexLittle(word, 4);
-    word = 0;
-  }
-  
-  //temperature
-  for (var cell = 0; cell < 12; cell++) {
-    for (var module = 0; module < 16; module++) {
-      if(document.getElementById("tm"+module+"cs"+cell).innerHTML == "1") {
-        word = word | (1 << module)
-      }
-    }
-    settings += decimalToHexLittle(word, 4);
-    word = 0;
-  }
-  
-  settings += decimalToHexLittle(document.getElementById("settingsBetaCELL").value, 4);
-  settings += decimalToHexLittle(document.getElementById("settingsBetaCPU").value, 4);
-  settings += decimalToHexLittle(document.getElementById("settingsRefNTC").value, 4);
-  settings += decimalToHexLittle(document.getElementById("settingsChemistry").value, 2);
-  settings += decimalToHexLittle(document.getElementById("settingsCurrentSensor").value, 2);
-  settings += decimalToHexLittle(document.getElementById("settingsCurrentSensorP1").value, 2);
-  settings += decimalToHexLittle(document.getElementById("settingsCurrentSensorP2").value, 2);
-  settings += decimalToHexLittle(document.getElementById("settingsCellMin").value, 4);
-  settings += decimalToHexLittle(document.getElementById("settingsCellMax").value, 4);
-  if (document.getElementById("settingsLog").value.length != 2) {
-    alert("error: you have to enter Log settings correctly!");
-    return;
-  }
-  settings += document.getElementById("settingsLog").value;
-  if (document.getElementById("settingsSD").value.length != 2) {
-    alert("error: you have to enter SD card settings properly!");
-    return;
-  }
-  settings += document.getElementById("settingsSD").value;
-  
-  document.getElementById("settingsNEW").value = settings;
-  document.getElementById("settingsLength").innerHTML = settings.length/2;
-}
-function decimalToHexLittle(d, padding) {
-    var littleEndian = "";
-    var hex = Number(d).toString(16);
-    padding = typeof (padding) === "undefined" || padding === null ? padding = 2 : padding;
 
-    while (hex.length < padding) {
-        hex = "0" + hex;
-    }
-    
-    while (hex.length > 0) {
-        littleEndian = hex.substring(0, 2) + littleEndian;
-        hex = hex.substring(2, hex.length);
-    }
-    return littleEndian;
-}
-
-function settingsLoad() {
-  var data = document.getElementById("settingsOUT").value;
-  var word = 0;
-  var cell = 0;
-  var id = '';
-  
-  //load cells + temperatures
-  if (data.length >= 116) {
-    for (var i = 0; i < 96; i += 4) {
-      if(i<48) {
-        cell = i / 4;
-      } else {
-        cell = (i-48)/ 4;
-      }
-      word = parseLittleEndian(data.substr(i,4),16);
-      for (var module = 0; module < 16; module++) {
-        //if cell/temp  is set
-        if(Math.pow(2, module) & word) {
-          
-          if(i<48) {
-            //cell
-            document.getElementById("vm"+module+"cs"+cell).innerHTML = "1";
-          } else {
-            //temp
-            document.getElementById("tm"+module+"cs"+cell).innerHTML = "1";    
-          }
-        } else {
-          if (i<48) {
-            //cell
-            document.getElementById("vm"+module+"cs"+cell).innerHTML = "0";
-          } else {
-            //temp
-            document.getElementById("tm"+module+"cs"+cell).innerHTML = "0";    
-          }
-        }
-      }
-    }
-    
-    document.getElementById("settingsBetaCELL").value = parseLittleEndian(data.substr(96,4),16);
-    document.getElementById("settingsBetaCPU").value = parseLittleEndian(data.substr(100,4),16);
-    document.getElementById("settingsRefNTC").value = parseLittleEndian(data.substr(104,4),16);
-    document.getElementById("settingsChemistry").value = parseLittleEndian(data.substr(108,2),16);
-    document.getElementById("settingsCurrentSensor").value = parseLittleEndian(data.substr(110,2),16);
-    document.getElementById("settingsCurrentSensorP1").value = parseLittleEndian(data.substr(112,2),16);
-    document.getElementById("settingsCurrentSensorP2").value = parseLittleEndian(data.substr(114,2),16);
-    document.getElementById("settingsCellMin").value = parseLittleEndian(data.substr(116,4),16);
-    document.getElementById("settingsCellMax").value = parseLittleEndian(data.substr(120,4),16);
-    document.getElementById("settingsLog").value = data.substr(124,2);
-    document.getElementById("settingsSD").value = data.substr(126,2);
-    
-    settingsRefresh();
-  } else {
-    alert('ERROR: Setting too short (not loaded?)\nString length: '+data.length);
-  }
-}
-
-function toggleSettingsItem(elem) {
-  if (elem.childNodes[0].innerHTML == "1") {
-    elem.childNodes[0].innerHTML = "0";
-  } else {
-    elem.childNodes[0].innerHTML = "1";    
-  }
-  settingsRefresh();
-}
-
-function toggleSettingsModule(str, module) {
-  var elem;
-  for (var cell = 0; cell < 12; cell++) {
-    elem = document.getElementById(str+module+"cs"+cell);
-    if (elem.innerHTML == '0') {
-      elem.innerHTML = "1";    
-    } else {
-      elem.innerHTML = "0";
-    }
-  }
-  settingsRefresh();
-}
-
-function setSettingsAll() {
-  for (var module = 0; module < 16; module++) {
-    for (var cell = 0; cell < 12; cell++) {
-      document.getElementById("vm"+module+"cs"+cell).innerHTML = "1";
-      document.getElementById("tm"+module+"cs"+cell).innerHTML = "1";
-    }
-  }
-  settingsRefresh();
-}
-
-function clearSettingsAll() {
-  for (var module = 0; module < 16; module++) {
-    for (var cell = 0; cell < 12; cell++) {
-      document.getElementById("vm"+module+"cs"+cell).innerHTML = "0";
-      document.getElementById("tm"+module+"cs"+cell).innerHTML = "0";
-    }
-  }
-  settingsRefresh();
-}
-
-function settingsRefresh() {
-  for (var module = 0; module < 16; module++) {
-    for (var cell = 0; cell < 12; cell++) {
-      //volt
-      if(document.getElementById("vm"+module+"cs"+cell).innerHTML == "1") {
-        document.getElementById("vm"+module+"cs"+cell).parentNode.style.backgroundColor = 'green';
-      } else {
-        document.getElementById("vm"+module+"cs"+cell).parentNode.style.backgroundColor = '#fff';
-      }
-      //temp
-      if(document.getElementById("tm"+module+"cs"+cell).innerHTML == "1") {
-        document.getElementById("tm"+module+"cs"+cell).parentNode.style.backgroundColor = 'orange';
-      } else {
-        document.getElementById("tm"+module+"cs"+cell).parentNode.style.backgroundColor = '#fff';
-      }
-    }
-  }
-  settingsCreate();
-}
 
 function serverSend(data) {
-  lionLoad("/send/"+data+"/"+Math.round(100000000*Math.random()),null);
+  lionLoad("/"+data+"/"+Math.round(100000000*Math.random()),null);
 }
 
 function lionLoad(url,where) {
@@ -420,7 +245,35 @@ function lionLoad(url,where) {
 }
 
 
-function hex2a() {
+
+
+
+
+function toggleVisibility(what) {
+  var obj = document.getElementById(what);
+  if (obj.style.display == 'block') {
+    obj.style.display='none';
+  } else {
+    obj.style.display='block';
+  }
+}
+
+
+
+
+/* BmsLion module functions           */
+/* in future move it to separate file */
+
+function BmsLion_consoleSubmit() {
+    var a = document.getElementById('consoleINPUT').value;
+    serverSend("BmsLion/_/_/"+a);
+    var elem = document.getElementById('consoleOUTPUT');
+    elem.innerHTML+= a+'<br />';
+    elem.scrollTop = elem.scrollHeight;
+}
+
+
+function BmsLion_hex2a() {
     var hex = document.getElementById("eepromOUT").value.toString();//force conversion
     var str = '';
     for (var i = 0; i < hex.length; i += 2)
@@ -429,34 +282,112 @@ function hex2a() {
     alert(str);
 }
 
-function toggleStatusTable() {
-  var obj = document.getElementById("statustablewrap");
+function BmsLion_parseLittleEndian(hex) {
+    var result = 0;
+    var pow = 0;
+    while (hex.length > 0) {
+        result += parseInt(hex.substring(0, 2), 16) * Math.pow(2, pow);
+        hex = hex.substring(2, hex.length);
+        pow += 8;
+    }
+    return result;
+};
+
+
+function BmsLion_settingsLoad() {
+  var data = document.getElementById("settingsOUT").value;
+  var word = 0;
+  var cell = 0;
+  var id = '';
   
-  if (obj.style.display == 'block') {
-    obj.style.display='none';
+  //load cells + temperatures
+  if (data.length >= 116) {
+    for (var i = 0; i < 96; i += 4) {
+      if(i<48) {
+        cell = i / 4;
+      } else {
+        cell = (i-48)/ 4;
+      }
+      word = BmsLion_parseLittleEndian(data.substr(i,4),16);
+      for (var module = 0; module < 16; module++) {
+        //if cell/temp  is set
+        if(Math.pow(2, module) & word) {
+          
+          if(i<48) {
+            //cell
+            document.getElementById("vm"+module+"cs"+cell).innerHTML = "1";
+          } else {
+            //temp
+            document.getElementById("tm"+module+"cs"+cell).innerHTML = "1";    
+          }
+        } else {
+          if (i<48) {
+            //cell
+            document.getElementById("vm"+module+"cs"+cell).innerHTML = "0";
+          } else {
+            //temp
+            document.getElementById("tm"+module+"cs"+cell).innerHTML = "0";    
+          }
+        }
+      }
+    }
+    
+    document.getElementById("settingsBetaCELL").value = BmsLion_parseLittleEndian(data.substr(96,4),16);
+    document.getElementById("settingsBetaCPU").value = BmsLion_parseLittleEndian(data.substr(100,4),16);
+    document.getElementById("settingsRefNTC").value = BmsLion_parseLittleEndian(data.substr(104,4),16);
+    document.getElementById("settingsChemistry").value = BmsLion_parseLittleEndian(data.substr(108,2),16);
+    document.getElementById("settingsCurrentSensor").value = BmsLion_parseLittleEndian(data.substr(110,2),16);
+    document.getElementById("settingsCurrentSensorP1").value = BmsLion_parseLittleEndian(data.substr(112,2),16);
+    document.getElementById("settingsCurrentSensorP2").value = BmsLion_parseLittleEndian(data.substr(114,2),16);
+    document.getElementById("settingsCellMin").value = BmsLion_parseLittleEndian(data.substr(116,4),16);
+    document.getElementById("settingsCellMax").value = BmsLion_parseLittleEndian(data.substr(120,4),16);
+    document.getElementById("settingsLog").value = data.substr(124,2);
+    document.getElementById("settingsSD").value = data.substr(126,2);
+    
+    BmsLion_settingsRefresh();
   } else {
-    obj.style.display='block';
+    alert('ERROR: Setting too short (not loaded?)\nString length: '+data.length);
   }
 }
 
-function struct() {
+function BmsLion_settingsRefresh() {
+  for (var module = 0; module < 16; module++) {
+    for (var cell = 0; cell < 12; cell++) {
+      //volt
+      if(document.getElementById("vm"+module+"cs"+cell).innerHTML == "1") {
+        document.getElementById("vm"+module+"cs"+cell).parentNode.style.backgroundColor = 'green';
+      } else {
+        document.getElementById("vm"+module+"cs"+cell).parentNode.style.backgroundColor = '#fff';
+      }
+      //temp
+      if(document.getElementById("tm"+module+"cs"+cell).innerHTML == "1") {
+        document.getElementById("tm"+module+"cs"+cell).parentNode.style.backgroundColor = 'orange';
+      } else {
+        document.getElementById("tm"+module+"cs"+cell).parentNode.style.backgroundColor = '#fff';
+      }
+    }
+  }
+  BmsLion_settingsCreate();
+}
+
+function BmsLion_struct() {
     var eeprom = document.getElementById("eepromOUT").value.toString();//force conversion
     
-    var CounterRuntime = getReadableTime(parseLittleEndian(eeprom.substring(0,8),16));
-    var CounterMakebreak = parseLittleEndian(eeprom.substring(8,16),16);
-    var error1 = parseLittleEndian(eeprom.substring(16,18),16);
-    var error2 = parseLittleEndian(eeprom.substring(18,20),16);
-    var V_StackMaximum = parseLittleEndian(eeprom.substring(20,28),16);
-    var V_StackMinimum = parseLittleEndian(eeprom.substring(28,36),16);
-    var I_StackMaximum = parseLittleEndian(eeprom.substring(36,44),16);
-    var I_StackMinimum = parseLittleEndian(eeprom.substring(44,52),16);
+    var CounterRuntime = getReadableTime(BmsLion_parseLittleEndian(eeprom.substring(0,8),16));
+    var CounterMakebreak = BmsLion_parseLittleEndian(eeprom.substring(8,16),16);
+    var error1 = BmsLion_parseLittleEndian(eeprom.substring(16,18),16);
+    var error2 = BmsLion_parseLittleEndian(eeprom.substring(18,20),16);
+    var V_StackMaximum = BmsLion_parseLittleEndian(eeprom.substring(20,28),16);
+    var V_StackMinimum = BmsLion_parseLittleEndian(eeprom.substring(28,36),16);
+    var I_StackMaximum = BmsLion_parseLittleEndian(eeprom.substring(36,44),16);
+    var I_StackMinimum = BmsLion_parseLittleEndian(eeprom.substring(44,52),16);
     I_StackMinimum = -1*(~I_StackMinimum);
-    var V_CellMaximum = parseLittleEndian(eeprom.substring(52,56),16);
-    var V_CellMinimum = parseLittleEndian(eeprom.substring(56,60),16);
-    var T_CellMaximum = parseLittleEndian(eeprom.substring(60,64),16);
-    var T_CellMinimum = parseLittleEndian(eeprom.substring(64,68),16);
-    var CounterWrites = parseLittleEndian(eeprom.substring(68,72),16);
-    var SOC = parseLittleEndian(eeprom.substring(72,76),16);
+    var V_CellMaximum = BmsLion_parseLittleEndian(eeprom.substring(52,56),16);
+    var V_CellMinimum = BmsLion_parseLittleEndian(eeprom.substring(56,60),16);
+    var T_CellMaximum = BmsLion_parseLittleEndian(eeprom.substring(60,64),16);
+    var T_CellMinimum = BmsLion_parseLittleEndian(eeprom.substring(64,68),16);
+    var CounterWrites = BmsLion_parseLittleEndian(eeprom.substring(68,72),16);
+    var SOC = BmsLion_parseLittleEndian(eeprom.substring(72,76),16);
     
     var error1str = '';
     error1str += 'CellOvervoltage: '+((error1 & 1)  !=0 )+'\n';
@@ -498,27 +429,117 @@ function struct() {
     output += error2str;
     output += '----------------\n';
  
-    
-    //alert(parseLittleEndian('9f000000'));
+    //alert(BmsLion_parseLittleEndian('9f000000'));
     alert(output);
 }
 
-function parseLittleEndian(hex) {
-    var result = 0;
-    var pow = 0;
-    while (hex.length > 0) {
-        result += parseInt(hex.substring(0, 2), 16) * Math.pow(2, pow);
-        hex = hex.substring(2, hex.length);
-        pow += 8;
-    }
-    return result;
-};
 
-function consoleSubmit() {
-    var a = document.getElementById('consoleINPUT').value;
-    serverSend(a);
-    var elem = document.getElementById('consoleOUTPUT');
-    elem.innerHTML+= a+'<br />';
-    elem.scrollTop = elem.scrollHeight;
+function BmsLion_settingsCreate() {
+  
+  var word = 0;
+  var settings = "";
+  
+  //volt
+  for (var cell = 0; cell < 12; cell++) {
+    for (var module = 0; module < 16; module++) {
+      if(document.getElementById("vm"+module+"cs"+cell).innerHTML == "1") {
+        word = word | (1 << module)
+      }
+    }
+    settings += BmsLion_decimalToHexLittle(word, 4);
+    word = 0;
+  }
+  
+  //temperature
+  for (var cell = 0; cell < 12; cell++) {
+    for (var module = 0; module < 16; module++) {
+      if(document.getElementById("tm"+module+"cs"+cell).innerHTML == "1") {
+        word = word | (1 << module)
+      }
+    }
+    settings += BmsLion_decimalToHexLittle(word, 4);
+    word = 0;
+  }
+  
+  settings += BmsLion_decimalToHexLittle(document.getElementById("settingsBetaCELL").value, 4);
+  settings += BmsLion_decimalToHexLittle(document.getElementById("settingsBetaCPU").value, 4);
+  settings += BmsLion_decimalToHexLittle(document.getElementById("settingsRefNTC").value, 4);
+  settings += BmsLion_decimalToHexLittle(document.getElementById("settingsChemistry").value, 2);
+  settings += BmsLion_decimalToHexLittle(document.getElementById("settingsCurrentSensor").value, 2);
+  settings += BmsLion_decimalToHexLittle(document.getElementById("settingsCurrentSensorP1").value, 2);
+  settings += BmsLion_decimalToHexLittle(document.getElementById("settingsCurrentSensorP2").value, 2);
+  settings += BmsLion_decimalToHexLittle(document.getElementById("settingsCellMin").value, 4);
+  settings += BmsLion_decimalToHexLittle(document.getElementById("settingsCellMax").value, 4);
+  if (document.getElementById("settingsLog").value.length != 2) {
+    alert("error: you have to enter Log settings correctly!");
+    return;
+  }
+  settings += document.getElementById("settingsLog").value;
+  if (document.getElementById("settingsSD").value.length != 2) {
+    alert("error: you have to enter SD card settings properly!");
+    return;
+  }
+  settings += document.getElementById("settingsSD").value;
+  
+  document.getElementById("settingsNEW").value = settings;
+  document.getElementById("settingsLength").innerHTML = settings.length/2;
+}
+function BmsLion_decimalToHexLittle(d, padding) {
+    var littleEndian = "";
+    var hex = Number(d).toString(16);
+    padding = typeof (padding) === "undefined" || padding === null ? padding = 2 : padding;
+
+    while (hex.length < padding) {
+        hex = "0" + hex;
+    }
+    
+    while (hex.length > 0) {
+        littleEndian = hex.substring(0, 2) + littleEndian;
+        hex = hex.substring(2, hex.length);
+    }
+    return littleEndian;
 }
 
+
+
+function BmsLion_toggleSettingsItem(elem) {
+  if (elem.childNodes[0].innerHTML == "1") {
+    elem.childNodes[0].innerHTML = "0";
+  } else {
+    elem.childNodes[0].innerHTML = "1";    
+  }
+  BmsLion_settingsRefresh();
+}
+
+function BmsLion_toggleSettingsModule(str, module) {
+  var elem;
+  for (var cell = 0; cell < 12; cell++) {
+    elem = document.getElementById(str+module+"cs"+cell);
+    if (elem.innerHTML == '0') {
+      elem.innerHTML = "1";    
+    } else {
+      elem.innerHTML = "0";
+    }
+  }
+  BmsLion_settingsRefresh();
+}
+
+function BmsLion_setSettingsAll() {
+  for (var module = 0; module < 16; module++) {
+    for (var cell = 0; cell < 12; cell++) {
+      document.getElementById("vm"+module+"cs"+cell).innerHTML = "1";
+      document.getElementById("tm"+module+"cs"+cell).innerHTML = "1";
+    }
+  }
+  BmsLion_settingsRefresh();
+}
+
+function BmsLion_clearSettingsAll() {
+  for (var module = 0; module < 16; module++) {
+    for (var cell = 0; cell < 12; cell++) {
+      document.getElementById("vm"+module+"cs"+cell).innerHTML = "0";
+      document.getElementById("tm"+module+"cs"+cell).innerHTML = "0";
+    }
+  }
+  BmsLion_settingsRefresh();
+}

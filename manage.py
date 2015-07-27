@@ -6,8 +6,6 @@ import config
 
 from app import create_app, db
 from app.models import Values5
-
-import time
 import signal
 import sys
 
@@ -36,9 +34,13 @@ manager.add_command("shell", Shell(make_context=make_shell_context))
 manager.add_command("db", MigrateCommand)
 
 
+class MenuView:
+    def __init__(self, view, name, module):
+        self.view = view
+        self.name = name
+        self.module = module
+
 if __name__ == '__main__':
-    # run bms thread with serial com
-    uptime = time.time()
     
     # kill with ctrl+c
     signal.signal(signal.SIGINT, signal_handler)
@@ -51,8 +53,10 @@ if __name__ == '__main__':
         #each module can do anything...
         dev_object.start()
         #save module instance
-        config.modules[key] = {'obj':dev_object, 'enabled':True} 
-        #dev_object.self = dev_object
+        config.modules[key] = {'obj':dev_object, 'enabled':True}
+        # append menu list from each module
+        for view,name in config.modules[key]['obj'].menu().items():
+            config.menu_items[view] = MenuView(view, name, key) 
 
     #if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     manager.run()

@@ -7,9 +7,9 @@ tm{{outer_index}}cs{{loop.index0}}=1{% endfor %}{% endfor %}-->
 
   <form>
       <ul class="nobullet">
-          <li><input onclick="serverSend(':l0')" type="button" value="STOP comm"></input><input onclick="serverSend(':l5')" type="button" value="START com"></input></li>
-          <li><input onclick="serverSend(':e3ec0')" type="button" value="read settings from CPU module"></input><input onclick="serverSend(':e3ec0'+document.getElementById('settingsNEW').value)" type="button" value="save new setting to CPU"></input></li>
-          <li><input readonly="true" size="160" type="text" id="settingsOUT" value=""></input><input onclick="settingsLoad()" type="button" value="load data in forms"></input></li>
+          <li><input onclick="serverSend('BmsLion/_/_/:l0')" type="button" value="STOP comm"></input><input onclick="serverSend('BmsLion/_/_/:l5')" type="button" value="START com"></input></li>
+          <li><input onclick="serverSend('BmsLion/_/_/:e3ec0')" type="button" value="read settings from CPU module"></input><input onclick="serverSend('BmsLion/_/_/:e3ec0'+document.getElementById('settingsNEW').value)" type="button" value="save new setting to CPU"></input></li>
+          <li><input readonly="true" size="160" type="text" id="settingsOUT" value=""></input><input onclick="BmsLion_settingsLoad()" type="button" value="load data in forms"></input></li>
           <li><input readonly="true" size="160" type="text" id="settingsNEW" value=""></input>byte length: <span id="settingsLength"></span>
           </li>
       </ul>
@@ -17,15 +17,15 @@ tm{{outer_index}}cs{{loop.index0}}=1{% endfor %}{% endfor %}-->
   <table>
       <tr>
           <td><label for="settingsBetaCELL">Thermistor BETA value (LMMs)</label></td>
-          <td><input onfocusout="settingsCreate();" size="10" type="text" id="settingsBetaCELL" value=""></td>
+          <td><input onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="settingsBetaCELL" value=""></td>
       </tr>
       <tr>
           <td><label for="settingsBetaCPU">Thermistor BETA value (LCM)</label></td>
-          <td><input onfocusout="settingsCreate();" size="10" type="text" id="settingsBetaCPU" value=""></td>
+          <td><input onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="settingsBetaCPU" value=""></td>
       </tr>
       <tr>
           <td><label for="settingsRefNTC">NTC ref voltage (LMMs)</label></td>
-          <td><input onfocusout="settingsCreate();" size="10" type="text" id="settingsRefNTC" value=""></td>
+          <td><input onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="settingsRefNTC" value=""></td>
       </tr>
       <tr>
           <td><label title="0 = LiCoO2, Lithium Cobalt Oxide
@@ -34,44 +34,44 @@ tm{{outer_index}}cs{{loop.index0}}=1{% endfor %}{% endfor %}-->
 3 = LiNiMnCoO2, Lithium Nickel Manganese Cobalt Oxide
 4 = LiNiCoAlO2, Lithium Nickel Cobalt Aluminium Oxide
 5 = LTO" for="settingsChemistry">Chemistry </label></td>
-          <td><input onfocusout="settingsCreate();" size="10" type="text" id="settingsChemistry" value=""></td>
+          <td><input onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="settingsChemistry" value=""></td>
       </tr>
       <tr>
           <td><label title="0 = none
       1 = hall sensor 0-5V
       2 = Isabellen CAN bus" for="settingsCurrentSensor">Current sensor type</label></td>
-          <td><input onfocusout="settingsCreate();" size="10" type="text" id="settingsCurrentSensor" value=""></td>
+          <td><input onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="settingsCurrentSensor" value=""></td>
       </tr>
       <tr>
           <td><label for="settingsCurrentSensorP1">Current sensor param#1</label></td>
-          <td><input onfocusout="settingsCreate();" size="10" type="text" id="settingsCurrentSensorP1" value=""></td>
+          <td><input onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="settingsCurrentSensorP1" value=""></td>
       </tr>
       <tr>
           <td><label for="settingsCurrentSensorP2">Current sensor param#2</label></td>
-          <td><input onfocusout="settingsCreate();" size="10" type="text" id="settingsCurrentSensorP2" value=""></td>
+          <td><input onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="settingsCurrentSensorP2" value=""></td>
       </tr>
       <tr>
           <td><label for="settingsCellMin">Cell min limit [V]</label></td>
-          <td><input onfocusout="settingsCreate();" size="10" type="text" id="settingsCellMin" value=""></td>
+          <td><input onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="settingsCellMin" value=""></td>
       </tr>
       <tr>
           <td><label for="settingsCellMax">Cell max limit [V]</label></td>
-          <td><input onfocusout="settingsCreate();" size="10" type="text" id="settingsCellMax" value=""></td>
+          <td><input onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="settingsCellMax" value=""></td>
       </tr>
       <tr>
           <td><label title="bits 0-7: USB, UART, SDCARD, not used, not used, ERROR, WARNING, DEBUG" for="settingsLog">Log parameters (hex)</label></td>
-          <td><input onfocusout="settingsCreate();" size="10" type="text" id="settingsLog" value=""></td>
+          <td><input onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="settingsLog" value=""></td>
       </tr>
       <tr>
           <td><label title="bits 0-7: ENABLED" for="settingsSD">SD card parameters (hex)</label></td>
-          <td><input onfocusout="settingsCreate();" size="10" type="text" id="settingsSD" value=""></td>
+          <td><input onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="settingsSD" value=""></td>
       </tr>
   </table>
   </form>
   
   
   
-  <button onclick="clearSettingsAll();">clear all</button><button onclick="setSettingsAll();">set all</button>
+  <button onclick="BmsLion_clearSettingsAll();">clear all</button><button onclick="BmsLion_setSettingsAll();">set all</button>
   <div style="clear:both">&nbsp;</div>
 
 {% for module in datalayer.Modules %}
@@ -83,15 +83,15 @@ tm{{outer_index}}cs{{loop.index0}}=1{% endfor %}{% endfor %}-->
      
     <div class="cell_set_wrapper">
       <div class="cell_set_caption" style="width: 100px;">&nbsp;</div>
-      <div class="cellV_set" style="width: 100px;" onclick="toggleSettingsModule('vm',{{loop.index0}});">Voltage</div>
-      <div class="cellT_set" style="width: 100px;" onclick="toggleSettingsModule('tm',{{loop.index0}});">Temperature</div>
+      <div class="cellV_set" style="width: 100px;" onclick="BmsLion_toggleSettingsModule('vm',{{loop.index0}});">Voltage</div>
+      <div class="cellT_set" style="width: 100px;" onclick="BmsLion_toggleSettingsModule('tm',{{loop.index0}});">Temperature</div>
     </div>
      
     {% for cell in module.Cells %}
         <div class="cell_set_wrapper">
           <div class="cell_set_caption">{{loop.index0+1}}</div>
-          <div class="cellV_set" onclick="toggleSettingsItem(this);"><span id="vm{{outer_index}}cs{{loop.index0}}">0</span></div>
-          <div class="cellT_set" onclick="toggleSettingsItem(this);"><span id="tm{{outer_index}}cs{{loop.index0}}">0</span></div>
+          <div class="cellV_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="vm{{outer_index}}cs{{loop.index0}}">0</span></div>
+          <div class="cellT_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="tm{{outer_index}}cs{{loop.index0}}">0</span></div>
         </div>
     {% endfor %}
    </div>

@@ -1,12 +1,12 @@
 
 
 <!-- vars for console -->
-Download: <a href="/download/output_file.txt" target="new"> output_file.txt </a><br />
+Download: <a href="/BmsLion/_/download/output_file.txt" target="new"> output_file.txt </a><br />
 <span id="consoleHTML" style="display:none"></span>
 <div id="consoleOUTPUT">
 </div>
 
-<input size="88" type="text" id="consoleINPUT" value="" onkeydown="if (event.keyCode == 13) consoleSubmit();"><input type="button" onclick="consoleSubmit();" value=" SEND ">
+<input size="88" type="text" id="consoleINPUT" value="" onkeydown="if (event.keyCode == 13) BmsLion_consoleSubmit();"><input type="button" onclick="BmsLion_consoleSubmit();" value=" SEND ">
 
 <br><br>
 
@@ -77,16 +77,16 @@ Download: <a href="/download/output_file.txt" target="new"> output_file.txt </a>
       <form>
           <ul>
               <li>eeprom (read address 16bit):</li>
-              <li><input size="88" type="text" id="eepromIN" value=""><input onclick="serverSend(':e'+document.getElementById('eepromIN').value)" type="button" value="send"></input></li>
-              <li><input readonly="true" size="88" type="text" id="eepromOUT" value=""><input onclick="hex2a()" type="button" value="ascii"><input onclick="struct()" type="button" value="struct"></input></li>
+              <li><input size="88" type="text" id="eepromIN" value=""><input onclick="serverSend('BmsLion/_/_/:e'+document.getElementById('eepromIN').value)" type="button" value="send"></input></li>
+              <li><input readonly="true" size="88" type="text" id="eepromOUT" value=""><input onclick="BmsLion_hex2a()" type="button" value="ascii"><input onclick="struct()" type="button" value="struct"></input></li>
           </ul>
       </form>
     </div>
     
-    <button onClick="serverSend(':bf')">balancing RUN TEST</button>
-    <button onClick="serverSend(':b1')">balancing RUN A</button>
-    <button onClick="serverSend(':b2')">balancing RUN B</button>
-    <button onClick="serverSend(':b3')">balancing RUN C</button>
-    <button onClick="serverSend(':b0')">balancing STOP</button>
+    <button onClick="serverSend('BmsLion/_/_/:bf')">balancing RUN TEST</button>
+    <button onClick="serverSend('BmsLion/_/_/:b1')">balancing RUN A</button>
+    <button onClick="serverSend('BmsLion/_/_/:b2')">balancing RUN B</button>
+    <button onClick="serverSend('BmsLion/_/_/:b3')">balancing RUN C</button>
+    <button onClick="serverSend('BmsLion/_/_/:b0')">balancing STOP</button>
 
 </div><!-- status div -->

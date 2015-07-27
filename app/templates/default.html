@@ -6,7 +6,7 @@
     <meta http-equiv="expires" content="0" />
     <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
     <meta http-equiv="pragma" content="no-cache" />
-    <!--<meta http-equiv="refresh" content="1">-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/> 
     <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
     <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='logo_lion_64.png') }}"/>
     <script src="{{ url_for('static', filename='canvasgauge.js') }}"></script>
@@ -16,49 +16,30 @@
 
 <body onLoad="lion();">
 
-<div id="topbarcontainer" >
-      <div class="menu-top-strip">
-      <ul>
-          <li><a onClick="loadView('view_modules')" href="#">overview</a></li>
-          <li><a onClick="loadView('view_gauge')" href="#">gauges</a></li>
-          <li><a onClick="loadView('view_status')" href="#">status</a></li>
-          <li><a onClick="loadView('view_charts')" href="#">charts</a></li>
-          <li><a onClick="loadView('view_settings')" href="#">settings</a></li>
-          <li><a href="#"  title="{{datalayer.linux}}" onClick="confirm('You really want to shut down the server?\n\n{{datalayer.linux}}') ? serverSend('poweroff',null) : false">power off</a></li>
-      </ul>
-    </div>
-    
-    <div id="topbar"> 
-      Refresh: <input size="10" type="text" id="refreshms" value="1000">ms 
-      &nbsp;&nbsp; PEC <span  id="s9"></span>%
-      &nbsp;&nbsp;&nbsp; uptime: <span id="up"></span>
-      <div id="refreshblinkwrapper"><div id="refreshblink"></div></div>
-    </div>
-    
-    <div class="stack-top-strip">
-      <ul>
-          <li class="barbold"><span id="s5"></span>V</li>
-          <li><span id="s6"></span></li>
-          <li class="barbold"><span id="s8"></span>kW</li>
-          <li><span id="s7"></span>A</li>
-      </ul>
-      <div style="clear:left;"></div>
-      <ul>
-          <li>Vmin:<span id="s3"></span></li>
-          <li>Vmax:<span id="s4"></span></li>
-          <li>diff:<span id="s10"></span>mV</li>
-          <li>Tmin:<span id="s1"></span></li>
-          <li>Tmax:<span id="s2"></span></li>
-      </ul>
-    </div>
 
+<div id="topbar"> 
+      <input size="5" type="text" pattern="[0-9]*" id="refreshms" value="{{defaults.refresh}}">
+      <button onclick="toggleVisibility('mod_status_div')" class="nav_but">&nbsp;&nbsp;&nbsp;&nbsp;info&nbsp;&nbsp;&nbsp;&nbsp;</button>
+      <button onclick="toggleVisibility('menu-top-strip')" class="nav_but">&nbsp;&nbsp;&nbsp;&nbsp;menu&nbsp;&nbsp;&nbsp;&nbsp;</button>
+      <div id="mod_status_div">
+      <ul class="nobullet">
+          <li>server uptime: <span id="up"></span></li>
+      </ul>
+      </div>
 </div>
 
-<span id="current-view">view_modules</span>
-<div id="alarm_stackmaxcell"></div>
+<div id="menu-top-strip">
+      <ul>
+          {% for key,item in menu.items() %}
+          <li><a onClick="loadView('{{item.view}}')" href="#">{{item.name}}</a></li>
+          {% endfor %}
+          <!--
+          <li><a href="#"  title="{{datalayer.linux}}" onClick="confirm('You really want to shut down the server?\n\n{{datalayer.linux}}') ? serverSend('poweroff',null) : false">power off</a></li>
+          -->
+      </ul>
+</div>
 
-<span id="alertShown"></span>
-<span id="alert"></span>
+
 
 <div id="container">
 
@@ -67,6 +48,11 @@
 
 
 </div>
+
+<span id="current-view">view_modules</span>
+<div id="alarm_stackmaxcell"></div>
+<span id="alertShown"></span>
+<span id="alert"></span>
 
 
 </body>

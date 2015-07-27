@@ -28,6 +28,18 @@ webgui_settings = {
         'default': DevelopmentConfig
         }
 
+# default variables
+default_variables = {
+  'uptime' : 0,                       # this contains uptime
+  'first_view_mod'   : 'BmsLion',     # set default view by module's first view
+  'refresh' : 1,                      # default refresh value [s]
+}
+
+# html menu
+# will append item from each module automatically based on hook menu
+menu_items        = {} # key, name
+menu_items_module = {} # this hold key to module connection
+
 #used for storing enabled modules 
 modules = {}
 
@@ -35,7 +47,8 @@ modules = {}
 webgui_modules = {}
 
 webgui_modules['BmsLionSQL'] = {
-    'db_filename':'todo.db'
+    'db_filename':'todo.db',
+    'db_scheme'  :'db_scheme.sql'
     }
 
 webgui_modules['BmsLion'] = [
@@ -50,4 +63,9 @@ webgui_modules['SendMail'] = {
     'destination':'petrkortanek@seznam.cz',
     "username":'petrkortanek',
     'password':'x'
-        }
+}
+
+webgui_modules['SDSmikro'] = {
+    'address':'XX.80.228.249:XX81',
+    'password': 'xxx'
+}
