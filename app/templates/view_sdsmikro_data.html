@@ -1,3 +1,17 @@
 {% include "data_only_topbar.html" %}
-p1={{datalayer.p1}}
-p2={{datalayer.p2}}
+last={{general.time - datalayer.lastupdate}}
+upt={{datalayer.uptime}}
+loc={{datalayer.loc}}
+p1={{datalayer.p1_raw}}
+p2={{datalayer.p2_raw}}
+p3={{datalayer.p3_raw}}
+p1s={{datalayer.p1imp / datalayer.p1mul}}
+p2s={{datalayer.p2imp / datalayer.p2mul}}
+p3s={{datalayer.p3imp / datalayer.p3mul}}
+ad1={{datalayer.ad1_raw}}
+ad2={{datalayer.ad2_raw}}
+ad3={{datalayer.ad3_raw}}
+ad4={{datalayer.ad4_raw}}
+r1={{datalayer.r1}}
+r2={{datalayer.r2}}
+t1={{datalayer.t[0]}}

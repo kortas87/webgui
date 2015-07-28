@@ -15,23 +15,38 @@ def index():
 def GET_view(view):
     if not (view in config.menu_items):
         return render_template('error.html', msg='Given view does not exist.')
-        
+    
+    # we are using the same templates for different instances of the same class
+    parts = view.split("_")
+    if (len(parts) == 3):
+        realview   = parts[0]+"_"+parts[1]
+    else:
+        realview = view
+
     module_name = config.menu_items[view].module
     
     if (config.modules[module_name]['enabled']):
-        return render_template(view+'.html', datalayer = config.modules[module_name]['obj'].datalayer)
+        return render_template(realview+'.html', datalayer = config.modules[module_name]['obj'].datalayer)
 
 # get data update for templates (periodic updates)
 @main.route('/data/<randomkey>/<view>')
 def GET_data(randomkey,view):
     general = {}
     general['uptime'] =  human_uptime() #time.time()
+    general['time']   = int(time.time())
     
     if not (view in config.menu_items):
         return render_template('error.html', msg='Given module does not exist.')
     
+    # we are using the same templates for different instances of the same class
+    parts = view.split("_")
+    if (len(parts) == 3):
+        realview   = parts[0]+"_"+parts[1]
+    else:
+        realview = view
+    
     module_name = config.menu_items[view].module
-    return render_template(view+'_data.html', datalayer = config.modules[module_name]['obj'].datalayer, general = general)
+    return render_template(realview+'_data.html', datalayer = config.modules[module_name]['obj'].datalayer, general = general)
 
 
 # send anything to module and get response or empty page

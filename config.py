@@ -49,14 +49,14 @@ webgui_modules = {}
 webgui_modules['BmsLionSQL'] = {
     'db_filename':'todo.db',
     'db_scheme'  :'db_scheme.sql'
-    }
+}
 
-webgui_modules['BmsLion'] = [
+webgui_modules['BmsLion'] = {
     '/dev/ttyACM0','/dev/ttyACM1',
     '/dev/ttyUSB0',
-    '/dev/tty.usbmodem01',]
+    '/dev/tty.usbmodem01',
     #'/home/kortas/minicom.cap']
-    
+}
 webgui_modules['SendMail'] = {
     "SMTPserver":'smtp.seznam.cz', 
     'sender':'petrkortanek@seznam.cz',
@@ -65,7 +65,14 @@ webgui_modules['SendMail'] = {
     'password':'x'
 }
 
-webgui_modules['SDSmikro'] = {
-    'address':'XX.80.228.249:XX81',
+webgui_modules['SDSmikro_doma'] = {
+    'name' : 'SDS doma',
+    'address':'192.168.33.43',
+    'password': 'xxx'
+}
+
+webgui_modules['SDSmikro_policko'] = {
+    'name' : 'SDS policko',
+    'address':'192.168.33.101',
     'password': 'xxx'
 }
