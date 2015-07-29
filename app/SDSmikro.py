@@ -69,11 +69,6 @@ class SDSmikro:
             self.thread = threading.Thread(target=self.run)
             self.terminate_flag = 0
             self.thread.start()
-            self.datalayer.message = "started new reading process"
-        else:
-            self.datalayer.message = "one process already running"
-        
-        print ("BmsLion module started")
     
     def status(self):
         
@@ -97,11 +92,11 @@ class SDSmikro:
                 root = ET.parse(urlopen(addr+"/xml.xml")).getroot()
                 self.datalayer.loc = root.find("./sysLoc").text
                 self.datalayer.p1_raw = root.find(".//s0_1/act").text
-                self.datalayer.p1     = self.datalayer.p1_raw.split()[0]
+                self.datalayer.p1     = float(self.datalayer.p1_raw.split()[0])*1000
                 self.datalayer.p2_raw = root.find(".//s0_2/act").text
-                self.datalayer.p2     = self.datalayer.p2_raw.split()[0]
+                self.datalayer.p2     = float(self.datalayer.p2_raw.split()[0])*1000
                 self.datalayer.p3_raw = root.find(".//s0_3/act").text
-                self.datalayer.p3     = self.datalayer.p3_raw.split()[0]
+                self.datalayer.p3     = float(self.datalayer.p3_raw.split()[0])*1000
                 self.datalayer.p1imp = int(root.find(".//s0_1/impT0").text)
                 self.datalayer.p1mul = int(root.find(".//s0_1/mul").text)
                 self.datalayer.p2imp = int(root.find(".//s0_2/impT0").text)

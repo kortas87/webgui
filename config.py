@@ -32,6 +32,7 @@ webgui_settings = {
 default_variables = {
   'uptime' : 0,                       # this contains uptime
   'first_view_mod'   : 'BmsLion',     # set default view by module's first view
+  'first_view_name'  : 'view_modules',
   'refresh' : 1,                      # default refresh value [s]
 }
 
@@ -75,4 +76,13 @@ webgui_modules['SDSmikro_policko'] = {
     'name' : 'SDS policko',
     'address':'192.168.33.101',
     'password': 'xxx'
+}
+
+webgui_modules['Midnite'] = {
+    'name' : 'Midnite',
+    'address':'192.168.33.6',
+}
+
+webgui_modules['CustomAll'] = {
+    'name' : 'VŠE',
 }

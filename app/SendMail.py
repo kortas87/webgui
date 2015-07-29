@@ -38,7 +38,7 @@ class SendMail:
         #}
     
     def terminate(self):
-        print ("SendMail module finished")
+        a = ""
         
     def send(self, subject = "test mail", destination = '', content = "no content"):
         if destination == '':
