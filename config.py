@@ -66,6 +66,6 @@ webgui_modules['SendMail'] = {
 }
 
 webgui_modules['SDSmikro'] = {
-    'address':'XX.80.228.249:XX81',
+    'address':'80.80.228.249:5000',
     'password': 'xxx'
 }

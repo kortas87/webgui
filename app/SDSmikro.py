@@ -3,27 +3,25 @@ import threading
 import xml.etree.ElementTree as ET
 from urllib.request import urlopen
 from time import gmtime, strftime
+from .ModuleInterface import *
 
 # each module must contain datalayer class which is then passed to views
-class SDSmikro_Datalayer:
+class SDSmikro_Datalayer(ModuleInterface_Datalayer):
     
     def __init__(self):
         self.p1 = 0
         self.p2 = 0
+        return
         
-
-class SDSmikro:
-    
+class SDSmikro(ModuleInterface):
     
     def __init__(self, configuration):
         self.config = configuration
         self.terminate_flag = 0
         self.running_flag = 0
         self.lastdata = ""
-        
         self.datalayer = SDSmikro_Datalayer()
         
-    
     def terminate(self):
         self.terminate_flag = 1
         self.thread.join()
@@ -49,8 +47,8 @@ class SDSmikro:
             self.datalayer.message = "started new reading process"
         else:
             self.datalayer.message = "one process already running"
-        
-        print ("BmsLion module started")
+        print ("Module %s stopped" % self.__class__.__name__)
+        return
     
     def status(self):
         
