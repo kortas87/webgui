@@ -73,8 +73,7 @@ class BmsLion:
             self.datalayer.message = "started new reading process"
         else:
             self.datalayer.message = "one process already running"
-        
-        print ("BmsLion module started")
+
     
     def send(self, what):
         

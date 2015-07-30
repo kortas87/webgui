@@ -13,7 +13,7 @@ class BmsLionSQL:
         #self.conn.autocommit(True)
         
     def terminate(self):
-        print ("finishing")
+        a = ""
     
     def status(self):
         return ""

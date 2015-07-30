@@ -1,11 +1,11 @@
 #!LS_env/bin/python
 
 import os
-
 import config
 
 from app import create_app, db
 from app.models import Values5
+
 import signal
 import sys
 
@@ -21,7 +21,7 @@ def signal_handler(signal, frame):
 
     print ('You pressed Ctrl+C!')
     print ("Trying to terminate thread")
-    for key in config.webgui_modules:
+    for key in config.modules:
         #each module can do anything...
         config.modules[key]['obj'].terminate();
         print ("EXIT: "+str(key)+" OK")
@@ -46,17 +46,29 @@ if __name__ == '__main__':
     signal.signal(signal.SIGINT, signal_handler)
     
     for key in config.webgui_modules:
+        
+        # key is then used for class name
+        configkey = key
+        # we can have more instances of the same plugin with different settings (_suffix)
+        more = key.split("_")
+        if (len(more) == 2):
+            key   = more[0]
+            suffix = "_"+str(more[1])
+        else:
+            suffix = ""
+            
         module = __import__('app.'+key)
         module = getattr(module, key)
         class_ = getattr(module, key)
-        dev_object = class_(config.webgui_modules[key])
+
+        dev_object = class_(config.webgui_modules[configkey])
         #each module can do anything...
         dev_object.start()
         #save module instance
-        config.modules[key] = {'obj':dev_object, 'enabled':True}
+        config.modules[configkey] = {'obj':dev_object, 'enabled':True}
         # append menu list from each module
-        for view,name in config.modules[key]['obj'].menu().items():
-            config.menu_items[view] = MenuView(view, name, key) 
+        for view,name in config.modules[configkey]['obj'].menu().items():
+            config.menu_items[view+suffix] = MenuView(view+suffix, name, configkey) 
 
     #if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     manager.run()

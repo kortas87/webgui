@@ -43,13 +43,12 @@
 
 <div id="container">
 
-<!--for changing default view do not forget to change <span id="current-view">...</span> !-->
-{% include "view_modules.html" %}
+{% include defaults['first_view_name']+".html" %}
 
 
 </div>
 
-<span id="current-view">view_modules</span>
+<span id="current-view">{{ defaults['first_view_name'] }}</span>
 <div id="alarm_stackmaxcell"></div>
 <span id="alertShown"></span>
 <span id="alert"></span>
