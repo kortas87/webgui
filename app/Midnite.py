@@ -68,12 +68,19 @@ class Midnite:
                 self.datalayer.power = rq.registers[4]
                 self.datalayer.kwh = rq.registers[3]/10
                 self.datalayer.amph = rq.registers[10]
+                
+                self.datalayer.lifekwh = (rq.registers[11] + (rq.registers[12] << 16))/10
+                
+                self.datalayer.tfet = rq.registers[18]/10
+                self.datalayer.tpcb = rq.registers[19]/10
 
                 client.close()
                 self.datalayer.lastupdate = int(time.time())
                 
             except Exception as e:
-                print ("error reading Midnite MODBUS data: "+str(addr))
+                print ("error reading Midnite MODBUS data: "+str(self.config['address']))
+            finally:
+                client.close()
             
             time.sleep(5)
 
