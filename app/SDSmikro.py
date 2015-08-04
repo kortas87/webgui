@@ -3,10 +3,11 @@ import threading
 import xml.etree.ElementTree as ET
 from urllib.request import urlopen
 from time import gmtime, strftime
-from app.webguilibs import webguilibs
+from .ModuleInterface import *
+from .webguilibs import webguilibs
 
 # each module must contain datalayer class which is then passed to views
-class SDSmikro_Datalayer:
+class SDSmikro_Datalayer(ModuleInterface_Datalayer):
     
     def __init__(self):
         self.p1 = 0
@@ -35,10 +36,9 @@ class SDSmikro_Datalayer:
         self.ad4 = 0
         self.ad4_raw = 0
         self.t = {}
-        
+        return
 
-class SDSmikro:
-    
+class SDSmikro(ModuleInterface):
     
     def __init__(self, configuration):
         self.config = configuration
@@ -46,7 +46,6 @@ class SDSmikro:
         self.running_flag = 0
         self.datalayer = SDSmikro_Datalayer()
         
-    
     def terminate(self):
         self.terminate_flag = 1
         self.thread.join()
