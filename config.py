@@ -60,29 +60,8 @@ webgui_modules['BmsLion'] = {
 }
 webgui_modules['SendMail'] = {
     "SMTPserver":'smtp.seznam.cz', 
-    'sender':'petrkortanek@seznam.cz',
-    'destination':'petrkortanek@seznam.cz',
-    "username":'petrkortanek',
+    'sender':'xxx@seznam.cz',
+    'destination':'xxx@seznam.cz',
+    "username":'xxx',
     'password':'x'
-}
-
-webgui_modules['SDSmikro_doma'] = {
-    'name' : 'SDS doma',
-    'address':'192.168.33.43',
-    'password': 'xxx'
-}
-
-webgui_modules['SDSmikro_policko'] = {
-    'name' : 'SDS policko',
-    'address':'192.168.33.101',
-    'password': 'xxx'
-}
-
-webgui_modules['Midnite'] = {
-    'name' : 'Midnite',
-    'address':'192.168.33.6',
-}
-
-webgui_modules['CustomAll'] = {
-    'name' : 'VŠE',
 }
