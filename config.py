@@ -31,8 +31,8 @@ webgui_settings = {
 # default variables
 default_variables = {
   'uptime' : 0,                       # this contains uptime
-  'first_view_mod'   : 'BmsLion',     # set default view by module's first view
-  'first_view_name'  : 'view_modules',
+  'first_view_mod'   : 'CustomAll',     # set default view by module's first view
+  'first_view_name'  : 'view_customall',
   'refresh' : 1,                      # default refresh value [s]
 }
 
@@ -52,12 +52,12 @@ webgui_modules['BmsLionSQL'] = {
     'db_scheme'  :'db_scheme.sql'
 }
 
-webgui_modules['BmsLion'] = {
-    '/dev/ttyACM0','/dev/ttyACM1',
-    '/dev/ttyUSB0',
-    '/dev/tty.usbmodem01',
-    #'/home/kortas/minicom.cap']
-}
+#webgui_modules['BmsLion'] = {
+#    '/dev/ttyACM0','/dev/ttyACM1',
+#    '/dev/ttyUSB0',
+#    '/dev/tty.usbmodem01',
+#    #'/home/kortas/minicom.cap']
+#}
 webgui_modules['SendMail'] = {
     "SMTPserver":'smtp.seznam.cz', 
     'sender':'petrkortanek@seznam.cz',
