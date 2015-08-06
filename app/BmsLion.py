@@ -154,7 +154,7 @@ class BmsLion:
                         self.send(":l5")
                         #debug write files
                         datestamp = time.strftime("%Y-%m-%d_%H-%M-%S", time.gmtime())
-                        self.logfile = open('dataout_'+datestamp+'.txt', 'w')
+                        #self.logfile = open('dataout_'+datestamp+'.txt', 'w')
                         #self.logfileH = open('dataout.bin', 'bw')
                         #time.sleep (1)
                         break
@@ -180,9 +180,9 @@ class BmsLion:
                     
                 
                 #debug
-                self.logfile.write(line)
+                #self.logfile.write(line)
                 #self.logfileH.write(received)
-                self.logfile.flush()
+                #self.logfile.flush()
                 #self.logfileH.flush()
                 
                 self.datalayer.receivecounter += 1
