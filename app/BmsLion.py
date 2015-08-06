@@ -191,7 +191,7 @@ class BmsLion:
             except Exception as e:
                 self.datalayer.status = 'I/O problem (readline) '+self.dev
                 #debug
-                self.logfile.close()
+                #self.logfile.close()
                 #self.logfileH.close()
                 print('I/O problem '+self.dev)
                 print(str(e))
