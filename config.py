@@ -60,8 +60,8 @@ webgui_modules['BmsLion'] = {
 }
 webgui_modules['SendMail'] = {
     "SMTPserver":'smtp.seznam.cz', 
-    'sender':'petrkortanek@seznam.cz',
-    'destination':'petrkortanek@seznam.cz',
-    "username":'petrkortanek',
+    'sender':'xxx@seznam.cz',
+    'destination':'xxx@seznam.cz',
+    "username":'xxx',
     'password':'x'
 }
