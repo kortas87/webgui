@@ -78,7 +78,6 @@ class BmsLion:
     def send(self, what):
         
         self.clearFileFlag = True
-        
         strtowrite = what+"\n"
         
         cmd = what[1:2]
