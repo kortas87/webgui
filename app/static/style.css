@@ -32,6 +32,9 @@ body {
   text-align: right;
 }
 
+.hidden {
+  display: none;
+}
 
 
 #statustable td {

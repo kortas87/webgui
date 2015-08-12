@@ -12,6 +12,7 @@ class CustomAll_Datalayer:
         self.sds_policko = 0
         self.sds_doma    = 0
         self.midnite     = 0
+        self.camera_bazen = 0
         
 
 class CustomAll:
@@ -57,6 +58,7 @@ class CustomAll:
         self.datalayer.sds_policko = config.modules['SDSmikro_policko']['obj'].datalayer
         self.datalayer.sds_doma = config.modules['SDSmikro_doma']['obj'].datalayer
         self.datalayer.midnite = config.modules['Midnite']['obj'].datalayer
+        self.datalayer.camera_bazen = config.modules['Camera']['obj'].datalayer
         
         while not self.terminate_flag:
             #do some more calculation? ...

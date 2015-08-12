@@ -85,6 +85,7 @@ webgui_modules['Midnite'] = {
 
 webgui_modules['Camera'] = {
     'name' : 'BazenCam',
+    'snapshotdir' : 'bazen',
     'address':'http://192.168.33.8/live/snapshot',
     'username': 'admin',
     'password': 'admin'
