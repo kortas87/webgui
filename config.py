@@ -66,3 +66,31 @@ webgui_modules['SendMail'] = {
     "username":'xxx',
     'password':'x'
 }
+
+webgui_modules['SDSmikro_doma'] = {
+    'name' : 'SDS doma',
+    'address':'192.168.33.43',
+    'password': 'xxx'
+}
+
+webgui_modules['SDSmikro_policko'] = {
+    'name' : 'SDS policko',
+    'address':'192.168.33.101',
+    'password': 'xxx'
+}
+
+webgui_modules['Midnite'] = {
+    'name' : 'Midnite',
+    'address':'192.168.33.6',
+}
+
+webgui_modules['Camera'] = {
+    'name' : 'BazenCam',
+    'address':'http://192.168.33.8/live/snapshot',
+    'username': 'admin',
+    'password': 'admin'
+}
+
+webgui_modules['CustomAll'] = {
+    'name' : 'VŠE',
+}
