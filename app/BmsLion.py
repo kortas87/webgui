@@ -383,7 +383,10 @@ class BmsLion:
                             self.datalayer.Modules[mod].vmod2 = int(value, 16);
                         #T pcb
                         elif index == 3:
-                            self.datalayer.Modules[mod].tpcb = int(value, 16);
+                            self.datalayer.Modules[mod].tpcb[0] = int(value, 16);
+                        #T pcb[1]
+                        elif index == 4:
+                            self.datalayer.Modules[mod].tpcb[1] = int(value, 16);
                                         
                 except Exception as e:
                     self.datalayer.message = 'Could not convert hex to int '+ str(value).replace('\n',' ')+', '+str(e).replace('\n',' ')
@@ -421,7 +424,7 @@ class Module:
         self.vref = 0
         self.vmod1 = 0 #by LTC        
         self.vmod2 = 0 #by mux
-        self.tpcb = 0
+        self.tpcb = [0,0,0]
         self.Cells = [Cell() for x in range(self.MAX_CELLS)]
 
 class Datalayer:
