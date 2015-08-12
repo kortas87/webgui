@@ -2,32 +2,42 @@
 
 ## Prerequests
 
-following steps to setup a working Enviroment:
+
+LINUX EXPERIENCED user - basically follow these steps:
 
 ~~~
     python3 -m venv LS_env
-
     source LS_env/bin/activate
-
     pip install -r requirements.txt
 ~~~
 
-for Ubuntu 14.04:
-    
-~~~    
+
+Otherwise follow these steps to setup a working Enviroment (more detailed):
+
+~~~
+    su
+    apt-get update
+    apt-get install python3 git
+    exit
+    cd ~/
+    git clone https://github.com/b9i/webgui.git
+    cd webgui
     python3 -m venv LS_env --without-pip
-    
     source LS_env/bin/activate
     wget https://bootstrap.pypa.io/get-pip.py
     python get-pip.py
-    deactivate
-    source bin/activate
+    pip install -r requirements.txt
 ~~~
 
 ## Running the application
 
-source LS_env/bin/activate
-./manage.py runserver -R -p 8080
+~~~
+    source LS_env/bin/activate
+    ./manage.py runserver -R -p 8080 -h 0.0.0.0
+~~~
+
+Start browser and enter http://localhost:8080 in address bar
+
 
 ## Migration the Database
 
