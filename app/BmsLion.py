@@ -381,12 +381,15 @@ class BmsLion:
                         #V module2 by mux
                         elif index == 2:
                             self.datalayer.Modules[mod].vmod2 = int(value, 16);
-                        #T pcb
+                        #T pcb[0]
                         elif index == 3:
                             self.datalayer.Modules[mod].tpcb[0] = int(value, 16);
                         #T pcb[1]
                         elif index == 4:
                             self.datalayer.Modules[mod].tpcb[1] = int(value, 16);
+                        #T pcb[2]
+                        elif index == 5:
+                            self.datalayer.Modules[mod].tpcb[2] = int(value, 16);
                                         
                 except Exception as e:
                     self.datalayer.message = 'Could not convert hex to int '+ str(value).replace('\n',' ')+', '+str(e).replace('\n',' ')
