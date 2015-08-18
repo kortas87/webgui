@@ -14,8 +14,16 @@ from flask.ext.migrate import Migrate, MigrateCommand
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 
+application = app
+
 manager = Manager(app)
 migrate = Migrate(app, db)
+
+class MenuView:
+    def __init__(self, view, name, module):
+        self.view = view
+        self.name = name
+        self.module = module
 
 def signal_handler(signal, frame):
 
@@ -33,42 +41,35 @@ def make_shell_context():
 manager.add_command("shell", Shell(make_context=make_shell_context))
 manager.add_command("db", MigrateCommand)
 
+# kill with ctrl+c
+signal.signal(signal.SIGINT, signal_handler)
 
-class MenuView:
-    def __init__(self, view, name, module):
-        self.view = view
-        self.name = name
-        self.module = module
+for key in config.webgui_modules:
+    
+    # key is then used for class name
+    configkey = key
+    # we can have more instances of the same plugin with different settings (_suffix)
+    more = key.split("_")
+    if (len(more) == 2):
+        key   = more[0]
+        suffix = "_"+str(more[1])
+    else:
+        suffix = ""
+        
+    module = __import__('app.'+key)
+    module = getattr(module, key)
+    class_ = getattr(module, key)
+
+    dev_object = class_(config.webgui_modules[configkey])
+    #each module can do anything...
+    dev_object.start()
+    #save module instance
+    config.modules[configkey] = {'obj':dev_object, 'enabled':True}
+    # append menu list from each module
+    for view,name in config.modules[configkey]['obj'].menu().items():
+        config.menu_items[view+suffix] = MenuView(view+suffix, name, configkey)
+
 
 if __name__ == '__main__':
-    
-    # kill with ctrl+c
-    signal.signal(signal.SIGINT, signal_handler)
-    
-    for key in config.webgui_modules:
-        
-        # key is then used for class name
-        configkey = key
-        # we can have more instances of the same plugin with different settings (_suffix)
-        more = key.split("_")
-        if (len(more) == 2):
-            key   = more[0]
-            suffix = "_"+str(more[1])
-        else:
-            suffix = ""
-            
-        module = __import__('app.'+key)
-        module = getattr(module, key)
-        class_ = getattr(module, key)
-
-        dev_object = class_(config.webgui_modules[configkey])
-        #each module can do anything...
-        dev_object.start()
-        #save module instance
-        config.modules[configkey] = {'obj':dev_object, 'enabled':True}
-        # append menu list from each module
-        for view,name in config.modules[configkey]['obj'].menu().items():
-            config.menu_items[view+suffix] = MenuView(view+suffix, name, configkey) 
-
     #if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     manager.run()
