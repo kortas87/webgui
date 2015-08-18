@@ -14,8 +14,16 @@ from flask.ext.migrate import Migrate, MigrateCommand
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 
+application = app
+
 manager = Manager(app)
 migrate = Migrate(app, db)
+
+class MenuView:
+    def __init__(self, view, name, module):
+        self.view = view
+        self.name = name
+        self.module = module
 
 def signal_handler(signal, frame):
 
@@ -35,7 +43,6 @@ manager.add_command("db", MigrateCommand)
 
 # kill with ctrl+c
 signal.signal(signal.SIGINT, signal_handler)
-
 
 if __name__ == '__main__':
     #if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
