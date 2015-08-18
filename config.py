@@ -6,10 +6,11 @@ class Config(object):
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'ganz komplizierter Schluessel'
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
-    
+    #i = 0
     @staticmethod
     def init_app(app):
-        print("start...")
+        #i = i+1
+        print("start config...")
         pass
 
 class DevelopmentConfig(Config):
