@@ -13,13 +13,13 @@ class Config(object):
         pass
 
 class DevelopmentConfig(Config):
-    DEBUG=True
+    DEBUG=False
 
 class TestingConfig(Config):
-    DEBUG=True
+    DEBUG=False
 
 class ProductionConfig(Config):
-    DEBUG=True
+    DEBUG=False
 
 webgui_settings = {
         'development': DevelopmentConfig,
