@@ -1,8 +1,15 @@
+
 from flask import render_template, session, redirect, url_for, current_app
+
 from . import main
 import time
-
 import config
+
+from matplotlib import pyplot as plt
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from matplotlib.figure import Figure
+from matplotlib.dates import AutoDateFormatter, AutoDateLocator, date2num
+
 
 # get the main page /
 @main.route('/', methods=['GET','POST'])
@@ -64,12 +71,6 @@ def GET_module(module='',secretkey='',name='',value='',randomkey=None):
     
     return (out, code)
 
-
-
-from matplotlib import pyplot as plt
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-from matplotlib.figure import Figure
-from matplotlib.dates import AutoDateFormatter, AutoDateLocator, date2num
 # this will be moved to BmsLion module - in case we are drawing any charts...
 # all data will be requested via:
 #                                   def GET_module
@@ -96,7 +97,6 @@ def GET_plot(param1="1", param2="2"):
     buf.seek(0)
     #plt.show()
     return send_file(buf, mimetype='image/png')
-
 
 # Gives a human-readable uptime string
 def human_uptime():
