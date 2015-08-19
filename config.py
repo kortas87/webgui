@@ -93,5 +93,5 @@ webgui_modules['Camera'] = {
 }
 
 webgui_modules['CustomAll'] = {
-    'name' : 'VŠE',
+    'name' : 'VSE',
 }
