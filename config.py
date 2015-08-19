@@ -34,7 +34,7 @@ default_variables = {
   'uptime' : 0,                       # this contains uptime
   'first_view_mod'   : 'CustomAll',     # set default view by module's first view
   'first_view_name'  : 'view_customall',
-  'refresh' : 1,                      # default refresh value [s]
+  'refresh' : 5,                      # default refresh value [s]
 }
 
 # html menu
