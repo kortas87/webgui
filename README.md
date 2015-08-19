@@ -32,8 +32,14 @@ Otherwise follow these steps to setup a working Enviroment (more detailed):
 ## Running the application
 
 ~~~
+    # su (probably need to run as root to access USB serial devices)
     source LS_env/bin/activate
+    
+    # debug
     ./manage.py runserver -R -p 8080 -h 0.0.0.0
+    
+    # production use with gunicorn server (+ apt-get install nginx)
+    #gunicorn webgui:app -b 0.0.0.0:5000 --log-file=log.txt
 ~~~
 
 Start browser and enter http://localhost:8080 in address bar
