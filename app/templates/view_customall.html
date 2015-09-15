@@ -10,6 +10,11 @@
 <tr><td>&nbsp;</td><td>pokoj 22°C, zádveří 21°C, půda 27°C</td></tr>
 <tr><td>Ventilace</td><td>in 0%, out 0%</td></tr>
 </table>
+
 <div class="hidden" id="baz_sh"></div>
-<button onclick="javascript:document.getElementById('baz_sh_img').src = document.getElementById('baz_sh').innerHTML;">bazén CAM</button>
-<img id="baz_sh_img" src=""/>
+<button class="nav_but" onclick="javascript:document.getElementById('baz_sh_img').src = document.getElementById('baz_sh').innerHTML; this.style.display='none';">bazén CAM</button>
+<img id="baz_sh_img" onclick="javascript:this.src = document.getElementById('baz_sh').innerHTML;" src=""/>
+
+<div class="hidden" id="dom_sh"></div>
+<button class="nav_but" onclick="javascript:document.getElementById('dom_sh_img').src = document.getElementById('dom_sh').innerHTML; this.style.display='none';">doma CAM</button>
+<img id="dom_sh_img" onclick="javascript:this.src = document.getElementById('dom_sh').innerHTML;" src=""/>

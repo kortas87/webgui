@@ -34,7 +34,7 @@ default_variables = {
   'uptime' : 0,                       # this contains uptime
   'first_view_mod'   : 'CustomAll',     # set default view by module's first view
   'first_view_name'  : 'view_customall',
-  'refresh' : 1,                      # default refresh value [s]
+  'refresh' : 5,                      # default refresh value [s]
 }
 
 # html menu
@@ -84,10 +84,18 @@ webgui_modules['Midnite'] = {
     'address':'192.168.33.6',
 }
 
-webgui_modules['Camera'] = {
+webgui_modules['Camera_bazen'] = {
     'name' : 'BazenCam',
     'snapshotdir' : 'bazen',
     'address':'http://192.168.33.8/live/snapshot',
+    'username': 'admin',
+    'password': 'admin'
+}
+
+webgui_modules['Camera_doma'] = {
+    'name' : 'DomaCam',
+    'snapshotdir' : 'doma',
+    'address':'http://192.168.33.47/live/snapshot',
     'username': 'admin',
     'password': 'admin'
 }
