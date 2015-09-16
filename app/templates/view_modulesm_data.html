@@ -1,20 +1,4 @@
-{% include "data_only_topbar.html" %}{% for module in datalayer.Modules[:datalayer.size] %}{% set outer_index = loop.index0 %}
-vref{{outer_index}}={{(module.vref/10000)|round(4)}}
-tpcb{{outer_index}}={{((module.tpcb[0]-27315)/100)}}
-t2pcb{{outer_index}}={{((module.tpcb[1]-27315)/100)}}
-t3pcb{{outer_index}}={{((module.tpcb[2]-27315)/100)}}
-sum2{{outer_index}}={{ '%1.2f' | format((module.vmod2/1000)|round(3))}}{% for cell in module.Cells %}
-vm{{outer_index}}c{{loop.index0}}={{ '%1.4f' | format( (cell.volt/10000)|round(4) )}}
-tm{{outer_index}}c{{loop.index0}}={{((cell.temp-27315)/100)}}
-bm{{outer_index}}c{{loop.index0}}={{cell.bal}}{% endfor %}{% endfor %}
-s1={{(datalayer.stackmintemp-27315)/100}}
-s2={{(datalayer.stackmaxtemp-27315)/100}}
-s3={{'%1.4f' | format( (datalayer.stackmincell/10000)|round(4) )}}
-s4={{'%1.4f' | format( (datalayer.stackmaxcell/10000)|round(4) )}}
-s5={{ '%1.1f' | format(datalayer.stackvolt/10)}}
-s6={{'%1.2f' | format(datalayer.stacksoc/100)}}%
-s7={{'%3.2f' | format(datalayer.stackI/10000)}}
-s8={{ '%1.2f' | format(datalayer.stackpower/100)}}
-s9={{ (datalayer.cpuPECpercent/100)|round|int}}
-s10={{'%1.1f' | format( ((datalayer.stackmaxcell-datalayer.stackmincell)/10)|round(1) )}}
+{% include "data_only_topbar.html" %}
+maxmod={{datalayer.MAX_MODULES}}
+status={{datalayer.status}}
 alert={{datalayer.alert}}

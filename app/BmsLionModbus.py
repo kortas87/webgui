@@ -5,7 +5,9 @@ import os.path
 import re
 import platform
 import html
+
 from struct import *
+from pymodbus.client.sync import ModbusSerialClient
 
 # separated process for reading serial port and parsing data
 class BmsLionModbus:
@@ -38,7 +40,8 @@ class BmsLionModbus:
         # we receive only string at the moment and pass it over serial (=value)
         
         if (name == "download"):
-            return self.datalayer.allfile
+            return "not implemented yet!"
+            #self.datalayer.allfile
         
         self.send(value)
         return ''
@@ -126,46 +129,59 @@ class BmsLionModbus:
         
     def run(self):
         self.running_flag = 1
+        
+        self.client = ModbusSerialClient(method = "rtu", port="/dev/ttyUSB1", baudrate=9600, stopbits=1, bytesize=8, timeout=0.1)
+        self.client.connect()
+        print ("MODBUS connected")
+        print (self.client)
+        rq = self.client.read_holding_registers(1000,5,unit=1)
+        print(rq.registers)
+        return;
         while not self.terminate_flag:
 
             if not self.connected:
                 for self.dev in self.devices:
                     try:
-                        if os.path.isfile(self.dev):
-                            self.connected = 1
-                            self.connection = open(self.dev)
-                            self.datalayer.status = 'connected to file '+self.dev
-                            self.filemode = True
-                            break
                         self.datalayer.status = 'opening '+self.dev
-                        br = 115200
-                        if self.dev == '/dev/ttyUSB0' or self.dev == '/dev/ttyUSB1':
-                            br = 9600
-                        self.connection = serial.Serial(port=self.dev, baudrate=br, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE,timeout=2,xonxoff=False, rtscts=False, dsrdtr=False)
+                        self.client = ModbusSerialClient(method = "rtu", port=self.dev, baudrate=9600, stopbits=1, bytesize=8, timeout=0.1)
+                        #client = ModbusSerialClient(method = "rtu", port="/dev/ttyUSB1", baudrate=9600, stopbits=1, bytesize=8, timeout=0.1)
+                        time.sleep(1)
+                        self.client.connect()
                         self.connected = 1
-                        #print(self.connection.getSettingsDict())
                         self.datalayer.receivecounter = 0
-                        self.datalayer.status = 'connected to '+self.dev
-                        self.send(":l5")
-                        time.sleep(0.3)
-                        self.send(":l5")
-                        #debug write files
-                        datestamp = time.strftime("%Y-%m-%d_%H-%M-%S", time.gmtime())
-                        #self.logfile = open('dataout_'+datestamp+'.txt', 'w')
-                        #self.logfileH = open('dataout.bin', 'bw')
-                        #time.sleep (1)
-                        break
-                    except serial.SerialException as e:
-                        self.datalayer.status = 'retry in 1s, no connection '+self.dev
+                        self.datalayer.status = 'modbus connected to '+self.dev
+                    except Exception as e:
+                        self.datalayer.status = 'retry in 2s, no connection '+self.dev
+                        print(str(e))
                         self.connected = 0
-                        time.sleep(0.5)
+                        time.sleep(2)
+                        continue
+                        
+                    # read config
+                    time.sleep(2)
+                    print ("MODBUS connected")
+                    print (self.client)
+                    rq = self.client.read_holding_registers(1000,5,unit=1)
+                    print(rq.registers)
+                    #self.datalayer.configRegsParse(rq.registers)
+                    #try:
+                        # read config
+                    #    rq = self.client.read_holding_registers(4000,78)
+                    #    self.datalayer.configRegsParse(rq.registers)
+                    #    break
+                    #except Exception as e:
+                    #    self.datalayer.status = 'config not loaded '+self.dev
+                    #    self.connected = 0
+                    #    time.sleep(2)
+                        
             if not self.connected:
-                time.sleep(0.5)
+                time.sleep(1)
                 continue
                 
             try:
-                line = self.connection.readline()
-                #self.connection.flushInput()
+                rq = self.client.read_holding_registers(base,40)
+                rq.registers[0]
+
                 
                 if self.filemode:
                     time.sleep(0.1)
@@ -207,203 +223,6 @@ class BmsLionModbus:
             self.connected = 0
             self.datalayer.message = "reading process terminated"
             self.running_flag = 0
-        
-    # parses 
-    # input: text line
-    # output: datalayer
-    def parse(self, line):
-        
-        #temp
-        #LionMail.schedule()
-        
-        lineOrig = line
-    
-        if len(line)>0:
-            if 'E' == line[:1]:
-                self.datalayer.message = 'error: PEC...'
-                return
-            
-            line = line.strip('\r\n')
-            cmd = line[0]
-            line = line[1:]
-        else:
-            #self.datalayer.message = 'zero length data received'
-            return
-            
-        # info output
-        if cmd == '>':
-          self.datalayer.consoleHTML += cmd + html.escape(line) +'<br />' 
-        
-        # receiving file
-        if cmd == '@':
-          if self.clearFileFlag:
-              self.datalayer.allfile = ""
-              self.clearFileFlag = False
-              
-          self.datalayer.allfile += line+"\n"
-          # debug:
-          #self.datalayer.consoleHTML += cmd + html.escape(line) +'<br />' 
-        
-        
-        #check if correct cmd received
-        elif any(cmd == s for s in self.commands):
-            
-            #module    
-            if len(line)>0:
-                try:
-                    mod = int(line[0], 16)
-                    line = line[1:]
-                    #if mod >= self.datalayer.MAX_MODULES:
-                    #    print("Configured less modules than received!!")
-                except Exception as e:
-                    self.datalayer.message = 'cound not convert line '+ str(line).replace('\n',' ')+', '+str(e).replace('\n',' ')
-                    return
-            else:
-                self.datalayer.message = 'wrong data received.'
-                return
-            
-            #data
-            if not len(line)>0:        
-                self.datalayer.message = 'wrong data received.'
-                return
-                
-            #eeprom
-            if cmd == 'e':
-                #bits 0-25
-                if mod == 0:
-                    self.datalayer.eepromOUT = str(line)
-                    print('EEPROM:'+line)
-                #bit 25-50
-                #if mod == 1:
-                #   self.datalayer.eepromOUT += str(line)
-                #    print('EEPROM(2/3)'+line)
-                    
-                #write mode output
-                if mod == 9:
-                    self.datalayer.eepromOUT = str(line)
-                    print('EEPROM'+line)
-            
-            #divide received string by n = 4
-            n = 4
-            val_length = len(line)
-            values = [line[i:i+n] for i in range(0, len(line), n)]
-            
-            for index, value in enumerate(values):
-                try:
-                    #voltage
-                    if cmd == 'v':
-                        if (mod + 1) > self.datalayer.size:
-                            self.datalayer.size = mod + 1
-                        #if we have not received full line then do not convert values
-                        #check at least divisibility
-                        if val_length % 2 == 0:
-                            self.datalayer.Modules[mod].Cells[index].volt = int(value, 16)
-                        else:
-                            print ("wrong data length"+val_length)
-                    #temperature
-                    elif cmd == 't':
-                        #if we have not received full line then do not convert values
-                        #check at least divisibility
-                        if val_length % 2 == 0:
-                            self.datalayer.Modules[mod].Cells[index].temp = int(value, 16)
-                        else:
-                            print ("wrong data length")
-                    #cpu module information
-                    elif cmd == 'c':
-                        if index == 0:
-                            self.datalayer.cputemp = int(value, 16)
-                        if index == 1:
-                            self.datalayer.cpuVsupply = int(value, 16)
-                        if index == 2:
-                            self.datalayer.cpuV33 = int(value, 16)
-                        if index == 3:
-                            self.datalayer.cpuPEC = int(value, 16)
-                        if index == 4:
-                            self.datalayer.cputimeA = value
-                        if index == 5:
-                            self.datalayer.cputime = int(self.datalayer.cputimeA+value,16)
-                        if index == 6:
-                            self.datalayer.eepromNewest = value
-                        if index == 7:
-                            self.datalayer.cpuPECpercent = int(value, 16) 
-                        if index == 8:
-                            self.datalayer.cpuAI[0] = int(value, 16)
-                        if index == 9:
-                            self.datalayer.cpuAI[1] = int(value, 16)
-                        if index == 10:
-                            self.datalayer.cpuAI[2] = int(value, 16)
-                        if index == 11:
-                            self.datalayer.cpuAI[3] = int(value, 16)
-                        if index == 12:
-                            self.datalayer.cpuAI[5] = int(value, 16)
-                    #stack information
-                    elif cmd == 's':
-                        if index == 0:
-                            self.datalayer.stackmaxtemp = int(value, 16)
-                        if index == 1:
-                            self.datalayer.stackmintemp = int(value, 16)
-                        if index == 2:
-                            self.datalayer.stackvolt = int(value, 16)
-                        if index == 3:
-                            self.datalayer.stackmincell = int(value, 16)
-                        if index == 4:
-                            self.datalayer.stackmaxcell = int(value, 16)
-                        if index == 5:
-                            self.datalayer.stacksoc = int(value, 16)
-                        if index == 6:
-                            self.datalayer.stackIA = value
-                        if index == 7:
-                            self.datalayer.stackI = int(self.datalayer.stackIA+value,16)
-                            if self.datalayer.stackI > 0x7FFFFFFF:
-                                self.datalayer.stackI -= 0x100000000
-                            self.datalayer.stackpower = self.datalayer.stackvolt/100 * self.datalayer.stackI/10000
-                        if index == 8:
-                            self.datalayer.cpuAIcalc[0] = int(value, 16)
-                        if index == 9:
-                            self.datalayer.cpuAIcalc[1] = int(value, 16)
-                        if index == 10:
-                            self.datalayer.cpuAIcalc[2] = int(value, 16)
-                        if index == 11:
-                            self.datalayer.cpuAIcalc[3] = int(value, 16)
-                        if index == 12:
-                            self.datalayer.cpuAIcalc[5] = int(value, 16)
-
-                    elif cmd == 'b':
-                        #decode balancing bits
-                        if index == 0:
-                            for i in range(12):
-                              self.datalayer.Modules[mod].Cells[i].bal = (int(value, 16) >> i) & 1;
-                        #reference voltage
-                        elif index == 1:
-                            self.datalayer.Modules[mod].vref = int(value, 16);
-                        #V module2 by mux
-                        elif index == 2:
-                            self.datalayer.Modules[mod].vmod2 = int(value, 16);
-                        #T pcb[0]
-                        elif index == 3:
-                            self.datalayer.Modules[mod].tpcb[0] = int(value, 16);
-                        #T pcb[1]
-                        elif index == 4:
-                            self.datalayer.Modules[mod].tpcb[1] = int(value, 16);
-                        #T pcb[2]
-                        elif index == 5:
-                            self.datalayer.Modules[mod].tpcb[2] = int(value, 16);
-                                        
-                except Exception as e:
-                    self.datalayer.message = 'Could not convert hex to int '+ str(value).replace('\n',' ')+', '+str(e).replace('\n',' ')
-                    #print(self.datalayer.message)
-                    print ('cmd: '+cmd+', line: '+lineOrig);
-                    print ('exception '+str(e)+'mod:'+str(mod)+' index: '+str(index))
-                    return
-            
-            self.datalayer.message = 'data ok'
-
-        else:
-            self.datalayer.message = 'uknown command received' #+line
-            #print (self.datalayer.message)
-            print (line)
-        
-        return
 
 
 class Config:
@@ -435,9 +254,15 @@ class Datalayer:
     # cpu registers
     struct3000 = bytes(50)
     # config registers
-    struct4000 = bytes(160)
+    configRegs = bytes(160)
     
-    MAX_MODULES = 16
+    MAX_MODULES = 0
+    
+    # must calculate cell config, number of modules
+    #
+    def configRegsParse (self, regs):
+        self.MAX_MODULES = str(regs[0])+":"+str(regs[1])+":"+str(regs[2])+":"+str(regs[3])
+        
     
     def getConsoleHTML(self):
         text = self.consoleHTML

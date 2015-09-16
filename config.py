@@ -31,10 +31,10 @@ webgui_settings = {
 
 # default variables
 default_variables = {
-  'uptime' : 0,                       # this contains uptime
-  'first_view_mod'   : 'BmsLion',     # set default view by module's first view
-  'first_view_name'  : 'view_modules',
-  'refresh' : 1,                      # default refresh value [s]
+  'uptime' : 0,                          # this contains uptime
+  'first_view_mod'   : 'BmsLionModbus',  # set default view by module's first view
+  'first_view_name'  : 'view_modulesm',
+  'refresh' : 1,                         # default refresh value [s]
 }
 
 # html menu
