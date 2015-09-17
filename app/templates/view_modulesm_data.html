@@ -1,6 +1,7 @@
 {% include "data_only_topbar.html" %}
 mods={{datalayer.numModules}}
 cells={{datalayer.numCells}}
+temps={{datalayer.numTemps}}
 rec={{datalayer.receivecounter}}
 status={{datalayer.status}}
 alert={{datalayer.alert}}{% for module in datalayer.Modules[:datalayer.size] %}{% set outer_index = loop.index0 %}

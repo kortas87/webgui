@@ -60,7 +60,7 @@ webgui_modules['BmsLionSQL'] = {
 #    #'/home/kortas/minicom.cap']
 #}
 webgui_modules['BmsLionModbus'] = {
-    'modbus_timeout' : 0.05,    # longest response must fit inside this time
+    'modbus_timeout' : 0.1,    # longest response must fit inside this time
     'modbus_speed'   : 9600,
     'sleeptime_comm' : 0.5,     # sleeptime between modbus requests
     'debug_mode'     : True,

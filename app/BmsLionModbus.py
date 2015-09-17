@@ -161,7 +161,7 @@ class BmsLionModbus:
                         rq = self.client.read_holding_registers(4000,29,unit=1)
                         self.datalayer.configRegsParse(rq.registers)
                     except Exception as e:
-                        print ("Could not read config! Maybe some other program blocks the connection?")
+                        print ("Could not read BMS config! Maybe some other program blocks the connection?")
                         self.connected = 0
                         continue
                     
@@ -230,6 +230,7 @@ class Datalayer:
     
     numModules = 0
     numCells = 0
+    numTemps = 5
     
     # must calculate cell config, number of modules
     #
@@ -237,9 +238,13 @@ class Datalayer:
         
         #get total count of modules and cells
         modulesbits = 0
-        for cell in range(0,12):
-            modulesbits |= regs[cell]
-            self.numCells += bin(regs[cell]).count("1")
+        for index in range(0,12):
+            modulesbits |= regs[index]
+            self.numCells += bin(regs[index]).count("1")
+        
+        offset = 12
+        for index in range(0,12):
+            self.numTemps += bin(regs[index+offset]).count("1")
         
         # create objects for modules and cells
         self.updateNumModules(bin(modulesbits).count("1"))
