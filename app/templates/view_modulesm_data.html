@@ -1,4 +1,14 @@
 {% include "data_only_topbar.html" %}
-maxmod={{datalayer.MAX_MODULES}}
+mods={{datalayer.numModules}}
+cells={{datalayer.numCells}}
+rec={{datalayer.receivecounter}}
 status={{datalayer.status}}
-alert={{datalayer.alert}}
+alert={{datalayer.alert}}{% for module in datalayer.Modules[:datalayer.size] %}{% set outer_index = loop.index0 %}
+vref{{outer_index}}={{(module.vref/10000)|round(4)}}
+tpcb{{outer_index}}={{((module.tpcb[0]-27315)/100)}}
+t2pcb{{outer_index}}={{((module.tpcb[1]-27315)/100)}}
+t3pcb{{outer_index}}={{((module.tpcb[2]-27315)/100)}}
+sum2{{outer_index}}={{ '%1.2f' | format((module.vmod2/1000)|round(3))}}{% for cell in module.Cells %}
+vm{{outer_index}}c{{loop.index0}}={{ '%1.4f' | format( (cell.volt/10000)|round(4) )}}
+tm{{outer_index}}c{{loop.index0}}={{((cell.temp-27315)/100)}}
+bm{{outer_index}}c{{loop.index0}}={{cell.bal}}{% endfor %}{% endfor %}

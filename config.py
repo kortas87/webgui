@@ -60,9 +60,15 @@ webgui_modules['BmsLionSQL'] = {
 #    #'/home/kortas/minicom.cap']
 #}
 webgui_modules['BmsLionModbus'] = {
-    '/dev/ttyUSB0',
-    '/dev/ttyUSB1',
-    '/dev/tty.usbmodem01',
+    'modbus_timeout' : 0.05,    # longest response must fit inside this time
+    'modbus_speed'   : 9600,
+    'sleeptime_comm' : 0.5,     # sleeptime between modbus requests
+    'debug_mode'     : True,
+    'ports' : { '/dev/ttyUSB0',
+                '/dev/ttyUSB1',
+                '/dev/ttyUSB2',
+                '/dev/tty.usbmodem01'
+              }
 }
 webgui_modules['SendMail'] = {
     "SMTPserver":'smtp.seznam.cz', 

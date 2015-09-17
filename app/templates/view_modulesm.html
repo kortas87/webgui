@@ -19,8 +19,43 @@
 PEC <span  id="s9"></span>%
 </p>
 
-<span id="status">unknown</span>
 
-<p id="maxmod">
-{{datalayer.MAX_MODULES}}
-</p>
+<table>
+<tr><td>MODBUS status:</td><td><span id="status">unknown</span></td></tr>
+<tr><td>Received</td><td><span id="rec">0</span></td></tr>
+<tr><td>Configured modules: </td><td><span id="mods"></span></td></tr>
+<tr><td>Configured cells: </td><td><span id="cells"></span></td></tr>
+</table>
+
+
+{% for module in datalayer.Modules[:datalayer.size] %}
+<div class="module" id="m{{loop.index0}}">
+  {% set outer_index = loop.index0 %}
+  
+  <div class="module-top-strip">
+      <ul>
+          <li>VmodMUX:<span id="sum2{{loop.index0}}"></span></li>
+          <li>Vref:<span id="vref{{loop.index0}}"></span></li>
+          <li>T<sub>1</sub>:<span id="tpcb{{loop.index0}}"></span></li>
+          <li>T<sub>2</sub>:<span id="t2pcb{{loop.index0}}"></span></li>
+          <li>T<sub>3</sub>:<span id="t3pcb{{loop.index0}}"></span></li>
+      </ul>
+  </div>
+   
+  {% for cell in module.Cells %}
+      <div class="cell" style="height: 0px; left: {{60*loop.index0}}px;">
+        <div class="voltage">
+            <span class="value" id="vm{{outer_index}}c{{loop.index0}}">{{(cell.volt/10000)|round(4)}}</span>
+            <span class="unit">V</span>
+        </div>
+        
+        <div id="bm{{outer_index}}c{{loop.index0}}" class="balancing"></div>
+
+      </div>
+      <!-- minus 40 minimum,-->
+      <div id="tm{{outer_index}}c{{loop.index0}}" class="temperature" style="height: 0px; left: {{60*loop.index0}}px;">{{ ((cell.temp-27315)/100)}}C</div>
+{% endfor %}
+      
+  <div class="module_title">Module #{{loop.index0 + 1}}</div>    
+</div>
+{% endfor %}

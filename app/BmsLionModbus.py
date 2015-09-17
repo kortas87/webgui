@@ -8,13 +8,15 @@ import html
 
 from struct import *
 from pymodbus.client.sync import ModbusSerialClient
+from pymodbus.exceptions import ModbusException
 
 # separated process for reading serial port and parsing data
 class BmsLionModbus:
     
     #init
     def __init__(self, configuration):
-        self.devices = configuration
+        self.config = configuration
+        self.device = ''
         self.datalayer = 0
         self.thread = 0
         self.connection = 0
@@ -22,7 +24,6 @@ class BmsLionModbus:
         self.terminate_flag = 0
         self.running_flag = 0
         self.commands = ['v','t','b','c','e','s']
-        self.dev = ''
         self.logfile = ''
         self.logfileH = ''
         self.filemode = False
@@ -129,99 +130,77 @@ class BmsLionModbus:
         
     def run(self):
         self.running_flag = 1
+        currentMod = 0
         
-        self.client = ModbusSerialClient(method = "rtu", port="/dev/ttyUSB1", baudrate=9600, stopbits=1, bytesize=8, timeout=0.1)
-        self.client.connect()
-        print ("MODBUS connected")
-        print (self.client)
-        rq = self.client.read_holding_registers(1000,5,unit=1)
-        print(rq.registers)
-        return;
         while not self.terminate_flag:
 
             if not self.connected:
-                for self.dev in self.devices:
+                for self.device in self.config['ports']:
                     try:
-                        self.datalayer.status = 'opening '+self.dev
-                        self.client = ModbusSerialClient(method = "rtu", port=self.dev, baudrate=9600, stopbits=1, bytesize=8, timeout=0.1)
-                        #client = ModbusSerialClient(method = "rtu", port="/dev/ttyUSB1", baudrate=9600, stopbits=1, bytesize=8, timeout=0.1)
-                        time.sleep(1)
-                        self.client.connect()
+                        self.datalayer.status = 'opening '+self.device
+                        self.client = ModbusSerialClient(method = "rtu", port=self.device, baudrate=self.config['modbus_speed'], stopbits=1, bytesize=8, timeout=self.config['modbus_timeout'])
+                        time.sleep(0.1)
+                        if not self.client.connect():
+                            self.connected = 0
+                            self.datalayer.status = 'retry in 2s, no connection '+self.device
+                            time.sleep(1)
+                            continue
                         self.connected = 1
                         self.datalayer.receivecounter = 0
-                        self.datalayer.status = 'modbus connected to '+self.dev
+                        self.datalayer.status = 'connected to '+self.device
                     except Exception as e:
-                        self.datalayer.status = 'retry in 2s, no connection '+self.dev
+                        
                         print(str(e))
                         self.connected = 0
-                        time.sleep(2)
+                        time.sleep(1)
                         continue
                         
                     # read config
-                    time.sleep(2)
-                    print ("MODBUS connected")
-                    print (self.client)
-                    rq = self.client.read_holding_registers(1000,5,unit=1)
-                    print(rq.registers)
-                    #self.datalayer.configRegsParse(rq.registers)
-                    #try:
-                        # read config
-                    #    rq = self.client.read_holding_registers(4000,78)
-                    #    self.datalayer.configRegsParse(rq.registers)
-                    #    break
-                    #except Exception as e:
-                    #    self.datalayer.status = 'config not loaded '+self.dev
-                    #    self.connected = 0
-                    #    time.sleep(2)
-                        
+                    print ("MODBUS connected - will read config")
+                    try:
+                        rq = self.client.read_holding_registers(4000,29,unit=1)
+                        self.datalayer.configRegsParse(rq.registers)
+                    except Exception as e:
+                        print ("Could not read config! Maybe some other program blocks the connection?")
+                        self.connected = 0
+                        continue
+                    
+                    
+                    # must exit "connection trying loop" because when it gets here --> successfully connection made
+                    break
+            
+            # this is needed when for loop per device finishes
+            # we cannot continue without proper connection
             if not self.connected:
+                print ("No success with connection. Will test configured devices again...")
                 time.sleep(1)
-                continue
-                
+                continue            
+            
+            # here is the "worker code"    
             try:
-                rq = self.client.read_holding_registers(base,40)
-                rq.registers[0]
-
-                
-                if self.filemode:
-                    time.sleep(0.1)
-                    #line += "\n"
-                else:
-                    line = line.decode('ascii')
-                    
-                #line = received.decode('ascii')
-                    
-                
-                #debug
-                #self.logfile.write(line)
-                #self.logfileH.write(received)
-                #self.logfile.flush()
-                #self.logfileH.flush()
-                
+                rq = self.client.read_holding_registers(1000+currentMod*100,30,unit=1)
+                self.datalayer.modulesRegsParse(currentMod, rq.registers)
                 self.datalayer.receivecounter += 1
-                self.parse(line)
+                currentMod += 1
+                if currentMod == self.datalayer.numModules:
+                    currentMod = 0
+                    
+                # configurable delay
+                time.sleep(self.config['sleeptime_comm'])
                 
-            except Exception as e:
-                self.datalayer.status = 'I/O problem (readline) '+self.dev
-                #debug
-                #self.logfile.close()
-                #self.logfileH.close()
-                print('I/O problem '+self.dev)
+            except ModbusException as e:
+                self.datalayer.status = 'Read holding registers exception:'+self.device
+                print(self.datalayer.status)
                 print(str(e))
                 self.connected = 0
-                
-                self.connection.close()
-                
+                self.client.close()
                 time.sleep(1)
         
         #cleanup only if connection was established...
         if self.connected:
-            self.connection.close()
-            #debug
-            #self.logfile.close()
-            #self.logfileH.close()            
+            self.client.close()          
             self.connected = 0
-            self.datalayer.message = "reading process terminated"
+            self.datalayer.message = "closing connection, thread exit"
             self.running_flag = 0
 
 
@@ -249,32 +228,60 @@ class Module:
 
 class Datalayer:
     
-    # module registers
-    struct1000 = bytes(1600)
-    # cpu registers
-    struct3000 = bytes(50)
-    # config registers
-    configRegs = bytes(160)
-    
-    MAX_MODULES = 0
+    numModules = 0
+    numCells = 0
     
     # must calculate cell config, number of modules
     #
     def configRegsParse (self, regs):
-        self.MAX_MODULES = str(regs[0])+":"+str(regs[1])+":"+str(regs[2])+":"+str(regs[3])
         
+        #get total count of modules and cells
+        modulesbits = 0
+        for cell in range(0,12):
+            modulesbits |= regs[cell]
+            self.numCells += bin(regs[cell]).count("1")
+        
+        # create objects for modules and cells
+        self.updateNumModules(bin(modulesbits).count("1"))
+    
+    # "parse" for cell voltages, temperatures, ...
+    #
+    def modulesRegsParse (self, currentMod, regs):
+        
+        # voltage
+        offset = 0
+        for index in range(0,Module.MAX_CELLS):
+            self.Modules[currentMod].Cells[index].volt = regs[index]
+        
+        # temperature
+        offset = 12
+        for index in range(0,Module.MAX_CELLS):
+            self.Modules[currentMod].Cells[index].temp = regs[index+offset]
+            
+        # balancing
+        # TODO fill this data
+        
+        # pcb temperature
+        offset = 27
+        self.Modules[currentMod].tpcb[0] = regs[offset]
+        self.Modules[currentMod].tpcb[1] = regs[offset+1]
+        self.Modules[currentMod].tpcb[2] = regs[offset+2]
+
     
     def getConsoleHTML(self):
         text = self.consoleHTML
         self.consoleHTML = ""
         return text
     
+    def updateNumModules(self, num):
+        self.numModules = num
+        self.Modules = [Module() for x in range(self.numModules)]
+    
     def __init__(self):
         self.size = 1
         self.sqllog = 0
         self.message = ""
         self.alert = ""
-        self.Modules = [Module() for x in range(self.MAX_MODULES)]
         self.cputemp = 0
         self.eepromNewest = 0
         self.cputime = 0
