@@ -38,7 +38,7 @@ class BmsLion:
         
         if (name == "download"):
             return self.datalayer.allfile
-        
+    
         self.send(value)
         return ''
         
@@ -82,6 +82,10 @@ class BmsLion:
         
         cmd = what[1:2]
         data = what[2:]
+        
+        print("ZZZ value:::")
+        print(cmd)
+        print(data)
         
         #we need to send data in packages of max size 64 chars (32bytes)
         #address 2bytes (4chars)

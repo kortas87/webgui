@@ -36,15 +36,21 @@ class BmsLionModbus:
     
     #module can receive GET messages
     def http_get(self, key, name, value):
-        # we do not check secret key
-        # we do not care about variable name
         # we receive only string at the moment and pass it over serial (=value)
+        
+        # we only get further when key = pass
+        if key != "pass":
+            return
         
         if (name == "download"):
             return "not implemented yet!"
-            #self.datalayer.allfile
+            # TODO: sd card readout
+            # self.datalayer.allfile
+        if name == "configsave":
+            print("Will send following config regs to CPU module:")
+            regs = [ int(value[i:i+4],16) for i in range(0, len(value), 4)]
+            print(regs)
         
-        self.send(value)
         return ''
         
     def status(self):
@@ -56,7 +62,7 @@ class BmsLionModbus:
     def menu(self):
         return {
         'view_modulesm' :'overview',
-        'view_settings':'settings',
+        'view_settingsm':'settings',
         }
     
     #items visible on each page  
@@ -77,6 +83,7 @@ class BmsLionModbus:
             self.datalayer.message = "one process already running"
 
     
+    # TODO: this function may be deleted probably...
     def send(self, what):
         
         self.clearFileFlag = True
@@ -158,13 +165,13 @@ class BmsLionModbus:
                     # read config
                     print ("MODBUS connected - will read config")
                     try:
-                        rq = self.client.read_holding_registers(4000,29,unit=1)
+                        rq = self.client.read_holding_registers(4000,32,unit=1)
                         self.datalayer.configRegsParse(rq.registers)
                     except Exception as e:
                         print ("Could not read BMS config! Maybe some other program blocks the connection?")
                         self.connected = 0
                         continue
-                    
+                    print ("Config successfully loaded!")
                     
                     # must exit "connection trying loop" because when it gets here --> successfully connection made
                     break
@@ -177,8 +184,10 @@ class BmsLionModbus:
                 continue            
             
             # here is the "worker code"    
+            error = 0
             try:
                 rq = self.client.read_holding_registers(1000+currentMod*100,30,unit=1)
+                #if hasattr(rq, 'registers'):
                 self.datalayer.modulesRegsParse(currentMod, rq.registers)
                 self.datalayer.receivecounter += 1
                 currentMod += 1
@@ -187,11 +196,15 @@ class BmsLionModbus:
                     
                 # configurable delay
                 time.sleep(self.config['sleeptime_comm'])
+                self.datalayer.status = "connected: "+self.device
+            
+            except AttributeError:
+                self.datalayer.status = 'Read holding registers exception (attr error): '+self.device
+                print(self.datalayer.status)
                 
             except ModbusException as e:
-                self.datalayer.status = 'Read holding registers exception:'+self.device
+                self.datalayer.status = 'Read holding registers exception: '+self.device
                 print(self.datalayer.status)
-                print(str(e))
                 self.connected = 0
                 self.client.close()
                 time.sleep(1)
@@ -235,6 +248,10 @@ class Datalayer:
     # must calculate cell config, number of modules
     #
     def configRegsParse (self, regs):
+        
+        print("Config registers hex: ")
+        self.eepromOUT = "".join(format(x, '04x') for x in regs)
+        print(self.eepromOUT)
         
         #get total count of modules and cells
         modulesbits = 0
