@@ -301,19 +301,19 @@ function BmsLion_settingsLoad() {
   var id = '';
   
   //load cells + temperatures
-  if (data.length >= 116) {
-    for (var i = 0; i < 96; i += 4) {
-      if(i<48) {
+  if (data.length == 232) { //TODO: change length...
+    for (var i = 0; i < 120; i += 4) {
+      if(i<72) {
         cell = i / 4;
       } else {
-        cell = (i-48)/ 4;
+        cell = (i-72)/ 4;
       }
       word = BmsLion_parseLittleEndian(data.substr(i,4),16);
       for (var module = 0; module < 16; module++) {
         //if cell/temp  is set
         if(Math.pow(2, module) & word) {
           
-          if(i<48) {
+          if(i<72) {
             //cell
             document.getElementById("vm"+module+"cs"+cell).innerHTML = "1";
           } else {
@@ -321,7 +321,7 @@ function BmsLion_settingsLoad() {
             document.getElementById("tm"+module+"cs"+cell).innerHTML = "1";    
           }
         } else {
-          if (i<48) {
+          if (i<72) {
             //cell
             document.getElementById("vm"+module+"cs"+cell).innerHTML = "0";
           } else {
@@ -331,19 +331,10 @@ function BmsLion_settingsLoad() {
         }
       }
     }
-    
-    document.getElementById("settingsBetaCELL").value = BmsLion_parseLittleEndian(data.substr(96,4),16);
-    document.getElementById("settingsBetaCPU").value = BmsLion_parseLittleEndian(data.substr(100,4),16);
-    document.getElementById("settingsRefNTC").value = BmsLion_parseLittleEndian(data.substr(104,4),16);
-    document.getElementById("settingsChemistry").value = BmsLion_parseLittleEndian(data.substr(108,2),16);
-    document.getElementById("settingsCurrentSensor").value = BmsLion_parseLittleEndian(data.substr(110,2),16);
-    document.getElementById("settingsCurrentSensorP1").value = BmsLion_parseLittleEndian(data.substr(112,2),16);
-    document.getElementById("settingsCurrentSensorP2").value = BmsLion_parseLittleEndian(data.substr(114,2),16);
-    document.getElementById("settingsCellMin").value = BmsLion_parseLittleEndian(data.substr(116,4),16);
-    document.getElementById("settingsCellMax").value = BmsLion_parseLittleEndian(data.substr(120,4),16);
-    document.getElementById("settingsLog").value = data.substr(124,2);
-    document.getElementById("settingsSD").value = data.substr(126,2);
-    
+    var regOffset = 4000;
+    for (var reg = 30; reg < 58; reg++) {
+      document.getElementById("set"+(regOffset+reg)).value = BmsLion_parseLittleEndian(data.substr(reg*4,4),16);
+    }
     BmsLion_settingsRefresh();
   } else {
     alert('ERROR: Setting too short (not loaded?)\nString length: '+data.length);
@@ -352,7 +343,7 @@ function BmsLion_settingsLoad() {
 
 function BmsLion_settingsRefresh() {
   for (var module = 0; module < 16; module++) {
-    for (var cell = 0; cell < 12; cell++) {
+    for (var cell = 0; cell < 18; cell++) {
       //volt
       if(document.getElementById("vm"+module+"cs"+cell).innerHTML == "1") {
         document.getElementById("vm"+module+"cs"+cell).parentNode.style.backgroundColor = 'green';
@@ -440,7 +431,7 @@ function BmsLion_settingsCreate() {
   var settings = "";
   
   //volt
-  for (var cell = 0; cell < 12; cell++) {
+  for (var cell = 0; cell < 18; cell++) {
     for (var module = 0; module < 16; module++) {
       if(document.getElementById("vm"+module+"cs"+cell).innerHTML == "1") {
         word = word | (1 << module)
@@ -461,25 +452,10 @@ function BmsLion_settingsCreate() {
     word = 0;
   }
   
-  settings += BmsLion_decimalToHexLittle(document.getElementById("settingsBetaCELL").value, 4);
-  settings += BmsLion_decimalToHexLittle(document.getElementById("settingsBetaCPU").value, 4);
-  settings += BmsLion_decimalToHexLittle(document.getElementById("settingsRefNTC").value, 4);
-  settings += BmsLion_decimalToHexLittle(document.getElementById("settingsChemistry").value, 2);
-  settings += BmsLion_decimalToHexLittle(document.getElementById("settingsCurrentSensor").value, 2);
-  settings += BmsLion_decimalToHexLittle(document.getElementById("settingsCurrentSensorP1").value, 2);
-  settings += BmsLion_decimalToHexLittle(document.getElementById("settingsCurrentSensorP2").value, 2);
-  settings += BmsLion_decimalToHexLittle(document.getElementById("settingsCellMin").value, 4);
-  settings += BmsLion_decimalToHexLittle(document.getElementById("settingsCellMax").value, 4);
-  if (document.getElementById("settingsLog").value.length != 2) {
-    alert("error: you have to enter Log settings correctly!");
-    return;
+  var regOffset = 4000;
+  for (var reg = 30; reg < 58; reg++) {
+    settings += BmsLion_decimalToHexLittle(document.getElementById("set"+(regOffset+reg)).value, 4);
   }
-  settings += document.getElementById("settingsLog").value;
-  if (document.getElementById("settingsSD").value.length != 2) {
-    alert("error: you have to enter SD card settings properly!");
-    return;
-  }
-  settings += document.getElementById("settingsSD").value;
   
   document.getElementById("settingsNEW").value = settings;
   document.getElementById("settingsLength").innerHTML = settings.length/2;
@@ -513,7 +489,7 @@ function BmsLion_toggleSettingsItem(elem) {
 
 function BmsLion_toggleSettingsModule(str, module) {
   var elem;
-  for (var cell = 0; cell < 12; cell++) {
+  for (var cell = 0; cell < 18; cell++) {
     elem = document.getElementById(str+module+"cs"+cell);
     if (elem.innerHTML == '0') {
       elem.innerHTML = "1";    
@@ -526,7 +502,7 @@ function BmsLion_toggleSettingsModule(str, module) {
 
 function BmsLion_setSettingsAll() {
   for (var module = 0; module < 16; module++) {
-    for (var cell = 0; cell < 12; cell++) {
+    for (var cell = 0; cell < 18; cell++) {
       document.getElementById("vm"+module+"cs"+cell).innerHTML = "1";
       document.getElementById("tm"+module+"cs"+cell).innerHTML = "1";
     }
@@ -536,7 +512,7 @@ function BmsLion_setSettingsAll() {
 
 function BmsLion_clearSettingsAll() {
   for (var module = 0; module < 16; module++) {
-    for (var cell = 0; cell < 12; cell++) {
+    for (var cell = 0; cell < 18; cell++) {
       document.getElementById("vm"+module+"cs"+cell).innerHTML = "0";
       document.getElementById("tm"+module+"cs"+cell).innerHTML = "0";
     }

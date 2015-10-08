@@ -5,6 +5,7 @@ import os.path
 import re
 import platform
 import html
+import struct
 
 from struct import *
 from pymodbus.client.sync import ModbusSerialClient
@@ -48,8 +49,16 @@ class BmsLionModbus:
             # self.datalayer.allfile
         if name == "configsave":
             print("Will send following config regs to CPU module:")
+            #struct to 16bit register conversion (big endian)
             regs = [ int(value[i:i+4],16) for i in range(0, len(value), 4)]
+            #struct to 16bit register conversion (little endian)
+            #regs = [ int(value[i:i+2],16)+int(value[i+2:i+4],16)*256 for i in range(0, len(value), 4)]
             print(regs)
+            try:
+                rq = self.client.write_registers(4000,regs,unit=1)
+                print ("Config registers written!")
+            except Exception as e:
+                print ("Could not write CONFIG registers!")
         
         return ''
         
@@ -163,9 +172,9 @@ class BmsLionModbus:
                         continue
                         
                     # read config
-                    print ("MODBUS connected - will read config")
+                    print ("MODBUS connected - will read config 58 regs")
                     try:
-                        rq = self.client.read_holding_registers(4000,32,unit=1)
+                        rq = self.client.read_holding_registers(4000,58,unit=1)
                         self.datalayer.configRegsParse(rq.registers)
                     except Exception as e:
                         print ("Could not read BMS config! Maybe some other program blocks the connection?")
@@ -255,11 +264,11 @@ class Datalayer:
         
         #get total count of modules and cells
         modulesbits = 0
-        for index in range(0,12):
+        for index in range(0,18):
             modulesbits |= regs[index]
             self.numCells += bin(regs[index]).count("1")
         
-        offset = 12
+        offset = 18
         for index in range(0,12):
             self.numTemps += bin(regs[index+offset]).count("1")
         

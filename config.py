@@ -65,6 +65,7 @@ webgui_modules['BmsLionModbus'] = {
     'modbus_speed'   : 9600,
     'sleeptime_comm' : 0.5,     # sleeptime between modbus requests
     'debug_mode'     : True,
+    'num_cell_modules': 18,
     'ports' : { '/dev/ttyUSB0',
                 '/dev/ttyUSB1',
                 '/dev/ttyUSB2',
