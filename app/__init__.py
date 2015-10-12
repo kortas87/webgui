@@ -19,6 +19,7 @@ class MenuView:
         self.view = view
         self.name = name
         self.module = module
+        self.weight = 0
 
 
 def create_app(config_name):
@@ -61,7 +62,8 @@ def create_app(config_name):
         # append menu list from each module
         for view,name in config.modules[configkey]['obj'].menu().items():
             config.menu_items[view+suffix] = MenuView(view+suffix, name, configkey)
-
+        
+        #config.menu_items.sort(key=lambda x: x.count, reverse=True)
     
 
     return app

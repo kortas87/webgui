@@ -17,6 +17,8 @@ class BmsLionModbus:
     #init
     def __init__(self, configuration):
         self.config = configuration
+        self.client = 0
+        self.busy = 0
         self.device = ''
         self.datalayer = 0
         self.thread = 0
@@ -47,6 +49,9 @@ class BmsLionModbus:
             return "not implemented yet!"
             # TODO: sd card readout
             # self.datalayer.allfile
+        if name == "configload":
+            self.readConfig()
+            
         if name == "configsave":
             print("Will send following config regs to CPU module:")
             #struct to 16bit register conversion (big endian)
@@ -90,59 +95,6 @@ class BmsLionModbus:
             self.datalayer.message = "started new reading process"
         else:
             self.datalayer.message = "one process already running"
-
-    
-    # TODO: this function may be deleted probably...
-    def send(self, what):
-        
-        self.clearFileFlag = True
-        strtowrite = what+"\n"
-        
-        cmd = what[1:2]
-        data = what[2:]
-        
-        #we need to send data in packages of max size 64 chars (32bytes)
-        #address 2bytes (4chars)
-        #command + colon + linefeed (can include \r) 2bytes (4chars)
-        #data then max 28bytes (56chars)
-        if (cmd == "e"):
-            if ((len(data) % 2) != 0):
-                self.datalayer.alert = "Data is not divisible by 2"
-                return
-            #if len(data) > 68:
-            #    self.datalayer.settingsOUT = self.datalayer.eepromOUT = "data too long (max 32 bytes)"
-            #    return
-            if len(data) < 4:
-                self.datalayer.alert = "Data is too short (need at least address 16bit)!"
-                return
-            try:
-                test = int(what[2:],16)
-            except Exception as e:
-                self.datalayer.alert = "Data are not in hex format!"
-                return
-            
-            #we need to split cmd to several chunks because of the usb limit 64 chars... (TODO better settings for m-stack USB?)
-            if len(data) > 60:
-                address = data[:4]
-                rest = data[4:]
-                #data length 56 char + 4 char address + 2 char cmd + 1 char \n
-                length = 56
-                length_bytes = 28
-                for idx,chunk in enumerate(rest[0+i:length+i] for i in range(0, len(rest), length)):
-                    address_new = "{:0>4x}".format(int(address,16) + length_bytes*idx)
-                    strtowrite = ":" + cmd + address_new + chunk + "\n"
-                    #tx to cpu module
-                    for char in strtowrite:
-                        self.connection.write(char.encode())
-                        self.connection.flush()
-                    time.sleep(0.1)
-                return
-        
-        #tx to cpu module
-        for char in strtowrite:
-            self.connection.write(char.encode())
-            self.connection.flush()
-
         
     def run(self):
         self.running_flag = 1
@@ -171,18 +123,10 @@ class BmsLionModbus:
                         time.sleep(1)
                         continue
                         
-                    # read config
-                    print ("MODBUS connected - will read config 58 regs")
-                    try:
-                        rq = self.client.read_holding_registers(4000,58,unit=1)
-                        self.datalayer.configRegsParse(rq.registers)
-                    except Exception as e:
-                        print ("Could not read BMS config! Maybe some other program blocks the connection?")
-                        self.connected = 0
+                    if not self.readConfig():
                         continue
-                    print ("Config successfully loaded!")
                     
-                    # must exit "connection trying loop" because when it gets here --> successfully connection made
+                    # must exit "connection trying loop" because when it gets here --> successfully made connection
                     break
             
             # this is needed when for loop per device finishes
@@ -195,6 +139,10 @@ class BmsLionModbus:
             # here is the "worker code"    
             error = 0
             try:
+                if self.busy:
+                    time.sleep(self.config['sleeptime_comm'])
+                    continue
+                self.busy = 1;
                 rq = self.client.read_holding_registers(1000+currentMod*100,30,unit=1)
                 #if hasattr(rq, 'registers'):
                 self.datalayer.modulesRegsParse(currentMod, rq.registers)
@@ -203,6 +151,7 @@ class BmsLionModbus:
                 if currentMod == self.datalayer.numModules:
                     currentMod = 0
                     
+                self.busy = 0;
                 # configurable delay
                 time.sleep(self.config['sleeptime_comm'])
                 self.datalayer.status = "connected: "+self.device
@@ -210,8 +159,10 @@ class BmsLionModbus:
             except AttributeError:
                 self.datalayer.status = 'Read holding registers exception (attr error): '+self.device
                 print(self.datalayer.status)
+                self.busy = 0;
                 
             except ModbusException as e:
+                self.busy = 0;
                 self.datalayer.status = 'Read holding registers exception: '+self.device
                 print(self.datalayer.status)
                 self.connected = 0
@@ -224,6 +175,32 @@ class BmsLionModbus:
             self.connected = 0
             self.datalayer.message = "closing connection, thread exit"
             self.running_flag = 0
+            
+    def readConfig(self):
+        # read config
+        print ("MODBUS connected - will read config 58 regs")
+        timeout = 10
+        while (self.busy == 1) and (timeout > 0):
+            print ("Waiting for connection 100ms")
+            timeout -= 1
+            time.sleep(0.1)
+        
+        if timeout == 0:
+            print("Timeout - no configuration read")
+            return False
+            
+        try:
+            self.busy = 1;
+            rq = self.client.read_holding_registers(4000,58,unit=1)
+            self.datalayer.configRegsParse(rq.registers)
+            self.busy = 0;
+        except Exception as e:
+            print ("Could not read BMS config! Maybe some other program blocks the connection?")
+            self.connected = 0
+            self.busy = 0;
+            return False
+        print ("Config successfully loaded!")
+        return True
 
 
 class Config:
@@ -279,24 +256,27 @@ class Datalayer:
     #
     def modulesRegsParse (self, currentMod, regs):
         
-        # voltage
-        offset = 0
-        for index in range(0,Module.MAX_CELLS):
-            self.Modules[currentMod].Cells[index].volt = regs[index]
-        
-        # temperature
-        offset = 12
-        for index in range(0,Module.MAX_CELLS):
-            self.Modules[currentMod].Cells[index].temp = regs[index+offset]
+        try:
+            # voltage
+            offset = 0
+            for index in range(0,Module.MAX_CELLS):
+                self.Modules[currentMod].Cells[index].volt = regs[index]
             
-        # balancing
-        # TODO fill this data
-        
-        # pcb temperature
-        offset = 27
-        self.Modules[currentMod].tpcb[0] = regs[offset]
-        self.Modules[currentMod].tpcb[1] = regs[offset+1]
-        self.Modules[currentMod].tpcb[2] = regs[offset+2]
+            # temperature
+            offset = 12
+            for index in range(0,Module.MAX_CELLS):
+                self.Modules[currentMod].Cells[index].temp = regs[index+offset]
+                
+            # balancing
+            # TODO fill this data
+            
+            # pcb temperature
+            offset = 27
+            self.Modules[currentMod].tpcb[0] = regs[offset]
+            self.Modules[currentMod].tpcb[1] = regs[offset+1]
+            self.Modules[currentMod].tpcb[2] = regs[offset+2]
+        except Exception:
+            print("modulesRegsParse - data out of bounds...")
 
     
     def getConsoleHTML(self):

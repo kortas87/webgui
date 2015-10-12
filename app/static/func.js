@@ -333,7 +333,7 @@ function BmsLion_settingsLoad() {
     }
     var regOffset = 4000;
     for (var reg = 30; reg < 58; reg++) {
-      document.getElementById("set"+(regOffset+reg)).value = BmsLion_parseLittleEndian(data.substr(reg*4,4),16);
+      document.getElementById("set"+(regOffset+reg)).value = parseInt(data.substr(reg*4,4),16); //BmsLion_parseLittleEndian(data.substr(reg*4,4),16);
     }
     BmsLion_settingsRefresh();
   } else {
@@ -454,11 +454,20 @@ function BmsLion_settingsCreate() {
   
   var regOffset = 4000;
   for (var reg = 30; reg < 58; reg++) {
-    settings += BmsLion_decimalToHexLittle(document.getElementById("set"+(regOffset+reg)).value, 4);
+    //settings += BmsLion_decimalToHexLittle(document.getElementById("set"+(regOffset+reg)).value, 4);
+    settings += leftPadding(Number(document.getElementById("set"+(regOffset+reg)).value).toString(16),4);
   }
   
   document.getElementById("settingsNEW").value = settings;
   document.getElementById("settingsLength").innerHTML = settings.length/2;
+}
+
+function leftPadding(val, size) {
+  var result = String(val);
+  while (result.length < size) {
+    result = "0" + result;
+  }
+  return result;
 }
 function BmsLion_decimalToHexLittle(d, padding) {
     var littleEndian = "";

@@ -8,7 +8,7 @@ tm{{outer_index}}cs{{loop.index0}}=1{% endfor %}{% endfor %}-->
   <form>
       <ul class="nobullet">
           <li>
-              <input onclick="serverSend('BmsLion/_/_/:e3ec0')" type="button" value="read settings from CPU module"></input>
+              <input onclick="serverSend('BmsLionModbus/pass/configload/all')" type="button" value="read settings from CPU module"></input>
               <input onclick="serverSend('BmsLionModbus/pass/configsave/'+document.getElementById('settingsNEW').value)" type="button" value="save new setting to CPU"></input>
               </input><input onclick="BmsLion_settingsLoad()" type="button" value="load data in forms"></input>
           </li>
