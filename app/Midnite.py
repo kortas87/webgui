@@ -10,6 +10,8 @@ class Midnite_Datalayer:
     def __init__(self):
         self.power = 0
         self.lastupdate = 0
+        self.ibatlimNew = 88
+        self.ibatlim = 88
         
 
 class Midnite:
@@ -48,12 +50,24 @@ class Midnite:
         return "Last seen :"+self.lastdata
         
     def run(self):
+        self.setCurrentRetries = 3
         self.running_flag = 1
         while not self.terminate_flag:
             try:
                 
                 client = ModbusTcpClient(self.config['address'],port=502)
                 client.connect()
+                
+                if (self.datalayer.ibatlimNew != self.datalayer.ibatlim) and self.setCurrentRetries > 0:
+                    print("new current limit: "+str(self.datalayer.ibatlimNew)+" A, writing: "+str(self.datalayer.ibatlimNew*10))
+                    self.setCurrentRetries -= 1
+                    # unlock first
+                    # client.write_registers(20492, [65535,17399])
+                    # client.write_registers(28673, [0,17399])
+                    # write value
+                    
+                    rq = client.write_register(4147, self.datalayer.ibatlimNew*10)
+                    time.sleep(1)
                 
                 base = 4114
                 rq = client.read_holding_registers(base,40)
@@ -73,12 +87,15 @@ class Midnite:
                 
                 self.datalayer.tfet = rq.registers[18]/10
                 self.datalayer.tpcb = rq.registers[19]/10
+                
+                self.datalayer.ibatlim = rq.registers[4148-base-1]/10
 
                 client.close()
                 self.datalayer.lastupdate = int(time.time())
                 
             except Exception as e:
                 print ("error reading Midnite MODBUS data: "+str(self.config['address']))
+                print (str(e))
             finally:
                 client.close()
             
@@ -87,5 +104,10 @@ class Midnite:
     # module can receive GET messages by clients
     # @main.route('/<module>/<key>/<name>/<value>')
     def http_get(self, key, name, value):
-        
-        return ""
+        if name == "ibatlim":
+            try:
+                self.datalayer.ibatlimNew = int(float(value))
+                self.setCurrentRetries = 3
+            except ValueError:
+                print("value error - get param midnite")
+            

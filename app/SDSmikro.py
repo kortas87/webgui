@@ -104,6 +104,11 @@ class SDSmikro(ModuleInterface):
                 self.datalayer.p3mul = int(root.find(".//s0_3/mul").text)
                 self.datalayer.uptime_raw = int(int(root.find(".//snmp/uptime").text)/100)
                 self.datalayer.uptime = webguilibs.niceUptime(self.datalayer.uptime_raw)
+                self.datalayer.opto1 = int(root.find(".//opto1").text)
+                self.datalayer.opto2 = int(root.find(".//opto2").text)
+                self.datalayer.opto3 = int(root.find(".//opto3").text)
+                self.datalayer.opto4 = int(root.find(".//opto4").text)
+
                 self.datalayer.ad1_raw = root.find(".//snmp/ad1_si").text
                 self.datalayer.ad1     = float(self.datalayer.ad1_raw.split()[0])
                 self.datalayer.ad2_raw = root.find(".//snmp/ad2_si").text

@@ -13,6 +13,8 @@ class CustomAll_Datalayer:
         self.sds_doma    = 0
         self.midnite     = 0
         self.camera_bazen = 0
+        self.alarmCounter = 0
+        self.currentLimitReleaseCounter = 0
         
 
 class CustomAll:
@@ -54,6 +56,7 @@ class CustomAll:
         self.running_flag = 1
         time.sleep(3)
         
+        
         # assign objects to single datalayer...
         self.datalayer.sds_policko = config.modules['SDSmikro_policko']['obj'].datalayer
         self.datalayer.sds_doma = config.modules['SDSmikro_doma']['obj'].datalayer
@@ -61,9 +64,26 @@ class CustomAll:
         self.datalayer.camera_bazen = config.modules['Camera_bazen']['obj'].datalayer
         self.datalayer.camera_doma = config.modules['Camera_doma']['obj'].datalayer
         
+        # omezeni proudu na zaklade alarmu cell log
+        if self.datalayer.sds_doma.opto2 != 0:
+            self.datalayer.alarmCounter += 1
+            self.datalayer.currentLimitReleaseCounter = 0
+        else:
+            self.datalayer.alarmCounter = 0
+            self.datalayer.currentLimitReleaseCounter += 1
+        
+        # po uplynuti doby zacit snizovat proud
+        if self.datalayer.alarmCounter > 10:
+            self.datalayer.midnite.ibatlimNew = self.datalayer.midnite.ibat - 2
+            
+        # po uplynuti doby resetovat omezeni proudu
+        if self.datalayer.currentLimitReleaseCounter > 10:
+            self.datalayer.midnite.ibatlimNew = 88
+            
+        
         while not self.terminate_flag:
             #do some more calculation? ...
-            time.sleep(5)
+            time.sleep(2)
 
     # module can receive GET messages by clients
     # @main.route('/<module>/<key>/<name>/<value>')

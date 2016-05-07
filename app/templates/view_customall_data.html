@@ -1,7 +1,9 @@
 {% include "data_only_topbar.html" %}
 pv={{datalayer.midnite.power}}
+pvac={{'%1.0f' | format(datalayer.sds_policko.p3)}}
 vbat={{datalayer.midnite.vbat}}
 ibat={{datalayer.midnite.ibat}}
+ibatlim={{datalayer.midnite.ibatlim}}
 pvkwh={{datalayer.midnite.kwh}}
 ps={{'%1.0f' | format(datalayer.sds_doma.p1)}}
 pcez={{'%1.0f' | format(datalayer.sds_doma.p3)}}
@@ -10,3 +12,4 @@ baz_r1={% if datalayer.sds_policko.r1 == 0 %}vypnuta{% else %}běží{% endif %}
 baz_r2={% if datalayer.sds_policko.r2 == 0 %}vypnuto{% else %}svítí{% endif %}
 baz_sh={{datalayer.camera_bazen.lastshot}}
 dom_sh={{datalayer.camera_doma.lastshot}}
+celllog={{datalayer.sds_doma.opto2}}
