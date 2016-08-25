@@ -1,0 +1,425 @@
+<!-- for module BmsLionModbus.py -->
+<div style="">
+
+<!--{% for module in datalayer.Modules %}{% set outer_index = loop.index0 %}{% for cell in module.Cells %}
+vm{{outer_index}}cs{{loop.index0}}=0
+tm{{outer_index}}cs{{loop.index0}}=1{% endfor %}{% endfor %}-->
+<div id="up" hidden="true"></div>
+  <form>
+      <ul class="nobullet">
+          <li>
+              <input onclick="serverSend('BmsLionModbus/pass/configload/all')" class="button" type="button" value="Read Settings"></input>
+              <input onclick="serverSend('BmsLionModbus/pass/configsave/'+document.getElementById('settingsNEW').value)" class="button" type="button" value="Save Settings to CPU"></input>
+              <input onclick="BmsLion_settingsLoad('settingsOUT')" type="button" value="Load Data" class="button"></input>
+			  <input onclick="BmsLion_savesettingstofile();" type="button" class="button" value="Save Settings to File"></input>
+          </li>
+          <li>
+			 <input id="settingsFileInput" type="file" accept=".txt" />		
+			 <input onclick="BmsLion_LoadFile();" type="button" value="Import file" class="button"></input>
+          </li>
+          <li><textarea cols="160" rows=5 type="text" id="settingsOUT" value=""></textarea></li>
+          <li><textarea cols="160" rows=5 type="text" id="settingsNEW" value=""></textarea></input><br />byte length: <span id="settingsLength"></span>
+          </li>
+      </ul>
+  <table class="tbSettings" style="text-align:center">
+    <colgroup>
+        <col width="50">
+        <col width="240">
+        <col width="200">
+        <col width="100">
+        <col width="750">
+    </colgroup>
+    <tr><th>ID</th><th>Name</th><th>Value</th><th>Dim</th><th>Description</th></tr>
+    <tr><td>4030</td><td>application/chemistry</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4030}}" value="" ></td><td>-</td><td>MSB = application, LSB = battery chemistry (not used currently)</td></tr>
+    <tr><td>4031</td><td>currentSensor-Type</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4031}}" value="" ></td><td>-</td><td >ID of currentSensor (currently only one supported (ISASCA1e) with ID: 2 )</td></tr>
+    <tr><td>4032</td><td>currentSensor-Offset</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4032}}" value="" ></td><td>/10 mV</td><td >currentSensor-Offset (not used currently)</td></tr>
+    <tr><td>4033</td><td>currentSensor-Slope</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4033}}" value="" ></td><td>/10 mV</td><td >currentSensor-Slope (not used currently)</td></tr>
+    <tr><td>4034</td><td>capacity</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4034}}" value="" ></td><td >/100 Ah</td><td>single cell capacity</td></tr>    
+    <tr><td>4035</td><td>numCellsParallel</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4035}}" value="" ></td><td >-</td><td>number of cells in parallel</td></tr>
+    <tr><td>4036</td><td>tempConf[0]</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4036}}" value="" ></td><td >-</td><td>beta coefficient for LMM</td></tr>
+    <tr><td>4037</td><td>tempConf[1]</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4037}}" value="" ></td><td >/10 mV</td><td>reference voltage for LMM</td></tr>
+    <tr><td>4038</td><td>tempConf[2]</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4038}}" value="" ></td><td >-</td><td>beta coefficient for LCM</td></tr>
+    <tr><td>4039</td><td>tempConf[3]</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4039}}" value="" ></td><td >/10 mV</td><td>reference voltage for LCM</td></tr>
+    <tr><td>4040</td><td>timeFilterError</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4040}}" value="" ></td><td >ms</td><td>error does not appear during filtering time</td></tr>
+    <tr><td>4041</td><td>timeFilterWarning</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4041}}" value="" ></td><td >ms</td><td>warning does not appear during filtering time</td></tr>
+    <tr><td>4042</td><td>timeoutShutdown</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4042}}" value="" ></td><td >ms</td><td>disconnect delay after an error occured</td></tr>
+    <tr><td>4043</td><td>maskErrorShutdown</td><td ><input readonly="true" style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4043}}" value="" ></td><td >-</td><td>Configuration of error shutdowns - please use clickable fields under this table!</td></tr>
+    <tr><td>4044</td><td>cellVoltErrorMin</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4044}}" value="" ></td><td >/10 mV</td><td>Minimum allowed voltage</td></tr>
+    <tr><td>4045</td><td>cellVoltErrorMax</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4045}}" value="" ></td><td >/10 mV</td><td>Maximum allowed voltage</td></tr>
+    <tr><td>4046</td><td>cellVoltWarnDelta</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4046}}" value="" ></td><td >/10 mV</td><td>safety margin on min/max voltage boundaries</td></tr>
+    <tr><td>4047</td><td>cellVoltMaxDiff</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4047}}" value="" ></td><td >-</td><td>Maximum allowed voltage delta between two cells: causing an error</td></tr>
+    <tr><td>4048</td><td>cellTempErrorMin</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4048}}" value="" ></td><td >/100 K </td><td>Minimum allowed temperature</td></tr>
+    <tr><td>4049</td><td>cellTempErrorMax</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4049}}" value="" ></td><td >/100 K</td><td>Maxmimum allowed temperature</td></tr>
+    <tr><td>4050</td><td>cellTempWarnDelta</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4050}}" value="" ></td><td >/10 K</td><td>safety margin on min/max temperature boundaries</td></tr>
+    <tr><td>4051</td><td>currentErrorMin</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4051}}" value="" ></td><td >/10 A</td><td>Maximum discharging current</td></tr>
+    <tr><td>4052</td><td>currentErrorMax</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4052}}" value="" ></td><td >/10 A</td><td>Maximum allowed charging current</td></tr>
+    <tr><td>4053</td><td>currentWarnDelta</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4053}}" value="" ></td><td >/10 A</td><td>safety margin on min/max current boundaries</td></tr>
+    <tr><td>4054</td><td>pecMinWarn/pecMinError</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4054}}" value="" ></td><td >%</td><td>MSB = PEC percentage to trigger warning, LSB = PEC percentage to trigger error</td></tr>
+    <tr><td>4055</td><td>socMinWarn/socMinError</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4055}}" value="" ></td><td >%</td><td>"MSB = SOC percentage to trigger warning,LSB = SOC percentage to trigger error"</td></tr>
+    <tr><td>4056</td><td>isolationMin</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4056}}" value="" ></td><td>-</td><td>isometer: enable:1 / disable: 0:</td></tr>
+    <tr><td>4057</td><td>canBaseAddr</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4057}}" value="" ></td><td >-</td><td>CAN base address of CAN matrix (0: no messages will be send, maximum is 1000)</td></tr>
+    <tr><td>4058</td><td>canBaseDebugAddr</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4058}}" value="" ></td><td >-</td><td>CAN DEBUG base address (0: no debug, maximum is 1000)</td></tr>
+    <tr><td>4059</td><td>First part of IP Address</td><td ><input readonly="true" style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4059}}" value="" ></td><td >-</td><td>Change IP Address to: <input style="text-align:center" onfocusout="ipaddrsplit();" size="15" type="text" id="ipinsert" value=""></td></tr>
+    <tr><td>4060</td><td>Second part of IP Address</td><td ><input readonly="true" style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4060}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4061</td><td>First part of Gateway </td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4061}}" value="" ></td><td >-</td><td>Change Default Gateway to: <input style="text-align:center" onfocusout="gwaddrsplit();" size="15" type="text" id="gwinsert" value=""></td></tr>
+    <tr><td>4062</td><td>Second part of Gateway</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4062}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4063</td><td>First part of Subnet mask</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4063}}" value="" ></td><td >-</td><td>Change Subnet mask to: <input style="text-align:center" onfocusout="smaddrsplit();" size="15" type="text" id="sminsert" value=""></td></tr>
+    <tr><td>4064</td><td>Second part of Subnet mask</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4064}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4065</td><td>First part of MAC</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4065}}" value="" ></td><td >-</td><td>Change Mac Address to: 0x<input style="text-align:center" onfocusout="macaddrsplit();" size="15" type="text" id="macinsert" value=""></td></tr>
+    <tr><td>4066</td><td>Second part of MAC</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4066}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4067</td><td>Third part of MAC</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4067}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4068</td><td>Custom name</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4068}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4069</td><td>Current sensor direction</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4069}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4070</td><td>Precharge on high side</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4070}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4071</td><td>No contactor feedback</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4071}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4072</td><td>Precharge diff pct</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4072}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4073</td><td>Use kl15</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4073}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4074</td><td>Reserve</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4074}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4075</td><td>Reserve</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4075}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4076</td><td>Reserve</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4076}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4077</td><td>Reserve</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4077}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4078</td><td>Reserve</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4078}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4079</td><td>Reserve</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4079}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4080</td><td>Reserve</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4080}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4081</td><td>Reserve</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4081}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4082</td><td>Reserve</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4082}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4083</td><td>Reserve</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4083}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4084</td><td>Reserve</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4084}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4085</td><td>Reserve</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4085}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4086</td><td>Reserve</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4086}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4087</td><td>Reserve</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4087}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4088</td><td>Reserve</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4088}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4089</td><td>Reserve</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4089}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4090</td><td>Reserve</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4090}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4091</td><td>Reserve</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4091}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4092</td><td>Reserve</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4092}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4093</td><td>Reserve</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4093}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4094</td><td>Reserve</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4094}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4095</td><td>Reserve</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4095}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4096</td><td>Reserve</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4096}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4097</td><td>Reserve</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4097}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4098</td><td>Reserve</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4098}}" value="" ></td><td >-</td><td></td></tr>
+    <tr><td>4099</td><td>Reserve</td><td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4099}}" value="" ></td><td >-</td><td></td></tr>
+      
+    <tr></tr>
+    </table>
+    </form>
+    
+    <table class="tbSettings" style="text-align:center">
+    <colgroup>
+        <col width="50">
+        <col width="200">
+        <col width="200">
+        <col width="200">
+        <col width="200">
+        <col width="200">
+    </colgroup>
+    <tr>
+		<th>ID</th>
+		<th>Description</th>
+		<th>Temperature1</th>
+		<th>Temperature2</th>
+		<th>Temperature3</th>
+		<th>Temperature4</th>
+    </tr>
+	<tr>
+		<td>4100</td>
+		<td>Write tempereratures: </td>
+	    <td><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4100}}" value="" ></td>
+	    <td><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4101}}" value="" ></td>
+	    <td><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4102}}" value="" ></td>
+	    <td><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4103}}" value="" ></td></tr>
+    <tr>
+		<th>ID</th><th>SoC [%] </th><th>Value1</th><th>Value2</th><th>Value3</th><th>Value4</th></tr>
+    <tr>
+		<td>4104</td>
+		<td>0</td>
+		<td><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4104}}" value="" ></td>
+		<td><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4105}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4106}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4107}}" value="" ></td></tr>
+		
+    <tr>
+		<td>4108</td>
+		<td>10</td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4108}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4109}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4110}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4111}}" value="" ></td></tr>
+		
+    <tr>
+		<td>4112</td>
+		<td>20</td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4112}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4113}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4114}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4115}}" value="" ></td></tr>
+		
+    <tr>
+		<td>4116</td>
+		<td>30</td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4116}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4117}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4118}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4119}}" value="" ></td></tr>
+		
+    <tr>
+		<td>4120</td>
+		<td>40</td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4120}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4121}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4122}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4123}}" value="" ></td></tr>
+		
+    <tr>
+		<td>4124</td>
+		<td>50</td>
+		<td><input style="text-align:center"  onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4124}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4125}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4126}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4127}}" value="" ></td></tr>
+		
+    <tr>
+		<td>4128</td>
+		<td>60</td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4128}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4129}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4130}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4131}}" value="" ></td></tr>
+		
+    <tr>
+		<td>4132</td>
+		<td>70</td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4132}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4133}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4134}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4135}}" value="" ></td></tr>
+		
+    <tr>
+		<td>4136</td>
+		<td>80</td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4136}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4137}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4138}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4139}}" value="" ></td></tr>
+		
+    <tr>
+		<td>4140</td>
+		<td>90</td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4140}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4141}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4142}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4143}}" value="" ></td></tr>
+		
+    <tr>
+		<td>4144</td>
+		<td>100</td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4144}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4145}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4146}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4147}}" value="" ></td></tr>
+      
+    <tr></tr>
+    
+        
+     </table>
+
+  </form>
+    
+    
+    <table class="tbSettings" style="text-align:center">
+    <colgroup>
+        <col width="50">
+        <col width="150">
+        <col width="150">
+        <col width="150">
+        <col width="150">
+        <col width="150">
+        <col width="150">
+    </colgroup>
+    <tr>
+		<th>CONTACTOR</th><th>1</th><th>2</th></tr>
+    <tr>
+    <tr>
+		<th>Numb</th>
+        <th><div class="contactor1_set_line">
+                                <div class="error_set_caption"></div>
+                                <div class="error_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="contactor1">0</span></div>
+                                <div class="warning_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="wcontactor1">0</span></div>
+                                </div></th>     
+                
+        <th>  <div class="contactor2_set_line">
+                                <div class="error_set_caption"></div>
+                                <div class="error_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="contactor2">0</span></div>
+                                <div class="warning_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="wcontactor2">0</span></div>
+                                </div>
+        </th></tr>
+    <tr>
+		<th>ID</th><th>Cycle</th><th>Life 1</th><th>Life 2</th><th>Life 3</th></tr>
+    <tr>
+		<td>4148</td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4148}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4149}}" value="" ></td>
+        <td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4150}}" value="" ></td>
+        <td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4151}}" value="" ></td>
+        </tr>
+                    
+        <tr>
+		<th>ID</th><th>Voltage</th><th>Current 1</th><th>Current 2</th><<th>Current 3</th></tr>
+    <tr>
+		<td>4152</td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4152}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4153}}" value="" ></td>
+        <td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4154}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4155}}" value="" ></td></tr>
+    
+    <tr>
+		<td>4156</td>
+        <td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4156}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4157}}" value="" ></td>
+        <td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4158}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4159}}" value="" ></td>
+                                      
+  <tr>
+		<td>4160</td>
+        <td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4160}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4161}}" value="" ></td>
+        <td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4162}}" value="" ></td>
+		<td ><input style="text-align:center" onfocusout="BmsLion_settingsCreate();" size="10" type="text" id="set{{4163}}" value="" ></td>
+        </table>
+
+  </form>
+  
+
+<h2>Error mask (enable to shut down if occurs):</h2>
+	<div class="error_set_wrapper">
+	
+	<div class="error_set_line">
+	  <div class="error_set_caption">cellOvervoltage</div>
+	  <div class="error_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="err0">0</span></div>
+	  <div class="warning_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="war0">0</span></div>
+	</div>
+	 
+	 <div class="error_set_line">
+	  <div class="error_set_caption">cellUndervoltage</div>
+	  <div class="error_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="err1">0</span></div>
+	  <div class="warning_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="war1">0</span></div>
+	  </div>
+	  
+	  <div class="error_set_line">
+	  <div class="error_set_caption">cellTempHigh</div>
+	  <div class="error_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="err2">0</span></div>
+	  <div class="warning_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="war2">0</span></div>
+	  </div>
+	  
+	  <div class="error_set_line">
+	  <div class="error_set_caption">cellTempLow</div>
+	  <div class="error_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="err3">0</span></div>
+	  <div class="warning_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="war3">0</span></div>
+	  </div>
+	  
+	  <div class="error_set_line">
+	  <div class="error_set_caption">currentOver</div>
+	  <div class="error_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="err4">0</span></div>
+	  <div class="warning_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="war4">0</span></div>
+	  </div>
+	  
+	  <div class="error_set_line">
+	  <div class="error_set_caption">currentUnder</div>
+	  <div class="error_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="err5">0</span></div>
+	  <div class="warning_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="war5">0</span></div>
+	  </div>
+	  
+	  <div class="error_set_line">
+	  	  <div class="error_set_caption">voltDiff</div>
+	  <div class="error_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="err6">0</span></div>
+	  <div class="warning_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="war6">0</span></div>
+	  </div>
+	  
+	  <div class="error_set_line">
+	  	  <div class="error_set_caption">isolation</div>
+	  <div class="error_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="err7">0</span></div>
+	  <div class="warning_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="war7">0</span></div>
+	  </div>
+	  
+	  <div class="error_set_line">
+	  	  <div class="error_set_caption">communication</div>
+	  <div class="error_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="err8">0</span></div>
+	  <div class="warning_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="war8">0</span></div>
+	  </div>
+	  
+	  <div class="error_set_line">
+	  	  <div class="error_set_caption">socLow</div>
+	  <div class="error_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="err9">0</span></div>
+	  <div class="warning_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="war9">0</span></div>
+	  </div>
+	  
+	  <div class="error_set_line">
+	  	  <div class="error_set_caption">openWireCheck</div>
+	  <div class="error_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="err10">0</span></div>
+	  <div class="warning_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="war10">0</span></div>
+	  </div>
+	  
+	  <div class="error_set_line">
+	  	  <div class="error_set_caption">measureTemp</div>
+	  <div class="error_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="err11">0</span></div>
+	  <div class="warning_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="war11">0</span></div>
+	  </div>
+	  
+	  <div class="error_set_line">
+	  	  <div class="error_set_caption">not used</div>
+	  <div class="error_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="err12">0</span></div>
+	  <div class="warning_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="war12">0</span></div>
+	  </div>
+	  
+	  <div class="error_set_line">
+	  	  <div class="error_set_caption">not used</div>
+	  <div class="error_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="err13">0</span></div>
+	  <div class="warning_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="war13">0</span></div>
+	  </div>
+	  
+	  <div class="error_set_line">
+	  	  <div class="error_set_caption">relayWelded</div>
+	  <div class="error_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="err14">0</span></div>
+	  <div class="warning_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="war14">0</span></div>
+	  </div>
+	  
+	  <div class="error_set_line">
+	  <div class="error_set_caption">relayOpen</div>
+	  <div class="error_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="err15">0</span></div>
+	  <div class="warning_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="war15">0</span></div>
+	  </div>
+	  <br style="clear:both;" />
+	</div>
+
+
+<h2>Cells configuration:</h2>
+  <button style="clear:all;" onclick="BmsLion_clearSettingsAll();" class="button">Clear All</button><span>   </span><button onclick="BmsLion_setSettingsAll();" class="button">Set All</button>
+  <div style="clear:both">&nbsp;</div>
+
+{% for module in range(16) %}
+  <div style="float:left; background: #eee; margin: 0 10px 10px 0;">
+
+  <div style="font-weight: bold;">Module #{{loop.index0 + 1}}</div>
+  <div class="module_set" id="m{{loop.index0}}">
+  {% set outer_index = loop.index0 %}
+     
+    <div class="cell_set_wrapper">
+      <div class="cell_set_caption" style="width: 100px;">&nbsp;</div>
+      <div class="cellV_set" style="width: 100px;" onclick="BmsLion_toggleSettingsModule('vm',{{loop.index0}});">Voltage</div>
+      <div class="cellT_set" style="width: 100px;" onclick="BmsLion_toggleSettingsModule('tm',{{loop.index0}});">Temperature</div>
+    </div>
+     
+    {% for cell in range(18) %}
+        <div class="cell_set_wrapper">
+          <div class="cell_set_caption">{{loop.index0+1}}</div>
+          <div class="cellV_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="vm{{outer_index}}cs{{loop.index0}}">0</span></div>
+          <div class="cellT_set" onclick="BmsLion_toggleSettingsItem(this);"><span id="tm{{outer_index}}cs{{loop.index0}}">0</span></div>
+        </div>
+    {% endfor %}
+   </div>
+   
+   </div>   
+{% endfor %}
+
+</div>

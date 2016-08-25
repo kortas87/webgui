@@ -1,0 +1,103 @@
+<div class="stack-top-strip" style="display:none">
+      <ul>
+          <li class="barbold"><span id="s5"></span>V</li>
+          <li><span id="s6"></span></li>
+          <li class="barbold"><span id="s8"></span>kW</li>
+          <li><span id="s7"></span>A</li>
+      </ul>
+      <div style="clear:left;"></div>
+      <ul>
+          <li>Vmin:<span id="s3"></span></li>
+          <li>Vmax:<span id="s4"></span></li>
+          <li>diff:<span id="s10"></span>mV</li>
+          <li>Tmin:<span id="s1"></span></li>
+          <li>Tmax:<span id="s2"></span></li>
+      </ul>
+</div>
+
+<p></p>
+
+<div id="serialportlist" hidden="true"></div>
+<div id="serialportconnected" hidden="true"></div>
+<div id="serialportselected" hidden="true"></div>
+<div id="alert" hidden="true"></div>
+<div id="alertShown" hidden="true"></div>
+
+	<form name="verzeichnis">
+		 <div class="styled-select"><select size="1" name="ddSerialports" id="ddSerialports" onchange="ConnectSerialPort()"></select></div>
+         <label style="font-size:1.1em;"><input type="checkbox" name="automaticportdetection" id="automaticportdetection" onClick="AutomaticPortDetectionChanged()" checked>Automatic port detection</label>
+	</form>
+	
+<table>
+<tr><th>Name</th><th>Status/Value</th</tr>
+<tr><td>Webserver uptime:</td><td><span id="up">unknown</span></td></tr>
+<tr><td>MODBUS status:</td><td><span id="status">unknown</span></td></tr>
+<tr><td>PEC</td><td><span id="s9"></span><span> %</span></td></tr>
+<tr><td>Received</td><td><span id="rec">0</span></td></tr>
+</table>
+<p></p>
+
+<table style="float: left;">
+<tr><th>Name</th><th>Value</th</tr>
+<tr><td>Configured modules: </td><td><span id="mods"></span></td></tr>
+<tr><td>Configured cells: </td><td><span id="cells"></span></td></tr>
+<tr><td>Configured temps: </td><td><span id="temps"></span></td></tr>
+<tr><td>SOC: </td><td><span id="soc"></span><span> %</span></td></tr>
+<tr><td>Current: </td><td><span id="stackI"></span><span> A</span></td></tr>
+<tr><td>Voltage: </td><td><span id="stackVolt"></span><span> V</span></td></tr>
+<tr><td>Battery stack warnings: </td><td><span id="warning_result"></span><span id="warning_raw" style="visibility:hidden"></span></td></tr>
+<tr><td>Battery stack errors: </td><td><span id="error_result"></span><span id="error_raw" style="visibility:hidden"></span></td></tr>
+<tr><td>CPU errors: </td><td><span id="cpuerror_result"></span><span id="cpuerror_raw" style="visibility:hidden" ></span></td></tr>
+</table>
+<table id="CPUdata"  style="float: left; margin-left:30px">
+    <colgroup>
+        <col width="200">
+            <col width="200">
+                <col width="200">
+                    </colgroup>
+    <tr><th>Input</th><th>Converted value</th><th>Raw value</th</tr>
+        <tr><td>Analog IN1: </td><td><span id="ANIN_CALC_1"></span></td><td><span id="ANIN_1"></span></td></tr>
+        <tr><td>Analog IN2: </td><td><span id="ANIN_CALC_2"></span></td><td><span id="ANIN_2"></span></td></tr>
+        <tr><td>Analog IN3: </td><td><span id="ANIN_CALC_3"></span></td><td><span id="ANIN_3"></span></td></tr>
+        <tr><td>Analog IN4: </td><td><span id="ANIN_CALC_4"></span></td><td><span id="ANIN_4"></span></td></tr>
+        <tr><td>Analog IN5 (AN-Ref): </td><td><span id="ANIN_CALC_5"></span></td><td> (<span id="ANIN_5"></span>)</td></tr>
+        <tr></tr>
+        </table>
+<p></p>
+
+<br clear=all>
+
+
+
+{% for module in datalayer.Modules[:datalayer.size] %}
+<div class="module" id="m{{loop.index0}}" style="float: clear">
+  {% set outer_index = loop.index0 %}
+  
+  <div class="module-top-strip">
+      <ul>
+          <li>VmodMUX:<span id="sum2{{loop.index0}}"></span></li>
+          <li>Vref:<span id="vref{{loop.index0}}"></span></li>
+          <li>T<sub>1</sub>:<span id="tpcb{{loop.index0}}"></span></li>
+          <li>T<sub>2</sub>:<span id="t2pcb{{loop.index0}}"></span></li>
+          <li>T<sub>3</sub>:<span id="t3pcb{{loop.index0}}"></span></li>
+      </ul>
+  </div>
+   
+  {% for cell in module.Cells %}
+      <div class="cell" style="height: 0px; left: {{60*loop.index0}}px;">
+        <div class="voltage">
+            <span class="value" id="vm{{outer_index}}c{{loop.index0}}">{{(cell.volt/10000)|round(4)}}</span>
+            <span class="unit">V</span>
+        </div>
+        
+        <div id="bm{{outer_index}}c{{loop.index0}}" class="balancing"></div>
+
+      </div>
+      <!-- minus 40 minimum,-->
+      <div id="tm{{outer_index}}c{{loop.index0}}" class="temperature" style="height: 0px; left: {{60*loop.index0}}px;">{{ ((cell.temp-27315)/100)}}C</div>
+      <div id="owm{{outer_index}}c{{loop.index0}}" class="openwirecheck" hidden="true"></div>
+{% endfor %}
+      
+  <div class="module_title">Module #{{loop.index0 + 1}}</div>    
+</div>
+{% endfor %}

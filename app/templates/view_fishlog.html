@@ -1,0 +1,32 @@
+<h1>FishBMS logger server</h1>
+<table>
+<tr><td>Výroba&nbsp;DC:</td><td><b><span id="pv"></span> W</b> (<span id="ibat"></span>A@<span id="vbat"></span>V, <span id="pvkwh"></span>kWh)</td></tr>
+<tr><td>Omezení proudu&nbsp;DC:</td><td><b><span id="ibatlim"></span> A</b> (cell log warn: <span id="celllog"></span>)</td></tr>
+<tr><td>Výroba&nbsp;AC:</td><td><b><span id="pvac"></span> W</b></td></tr>
+<tr><td>Měnič:</td><td><b><span id="ps"></span> W</b></td></tr>
+<tr><td>ČEZ:</td><td><b><span id="pcez"></span> W</b></td></tr>
+<!--<tr><td>Baterie:</td><td>56% (3.276V - 3.289V, delta 13mV)</td></tr>-->
+<tr><td>Bazén:</td><td><span id="tbaz"></span> &deg;C (filtrace <span id="baz_r1"></span>, osvětlení <span id="baz_r2"></span>)</td></tr>
+<!--<tr><td>Venku:</td><td>24&deg;</td></tr>-->
+<!--<tr><td>Topení:</td><td>vypnuto, nádrž (16~21°C), čerpadlo vypnuto</td></tr>-->
+<!--<tr><td>&nbsp;</td><td>pokoj 22°C, zádveří 21°C, půda 27°C</td></tr>-->
+<!--<tr><td>Ventilace</td><td>in 0%, out 0%</td></tr>-->
+</table>
+
+
+<div class="hidden" id="baz_sh"></div>
+<button class="nav_but" onclick="javascript:document.getElementById('baz_sh_img').src = document.getElementById('baz_sh').innerHTML; this.style.display='none';">bazén CAM</button>
+<img id="baz_sh_img" onclick="javascript:this.src = document.getElementById('baz_sh').innerHTML;" src=""/>
+
+<div class="hidden" id="dom_sh"></div>
+<button class="nav_but" onclick="javascript:document.getElementById('dom_sh_img').src = document.getElementById('dom_sh').innerHTML; this.style.display='none';">doma CAM</button>
+<img id="dom_sh_img" onclick="javascript:this.src = document.getElementById('dom_sh').innerHTML;" src=""/>
+
+<hr />
+Nastavení omezení proudu:<br />
+<button class="nav_but" onclick="javascript:serverSend('Midnite/123/ibatlim/88');">max</button>
+<button class="nav_but" onclick="javascript:serverSend('Midnite/123/ibatlim/50');">50 A</button>
+<button class="nav_but" onclick="javascript:serverSend('Midnite/123/ibatlim/30');">30 A</button>
+<button class="nav_but" onclick="javascript:serverSend('Midnite/123/ibatlim/20');">20 A</button>
+<button class="nav_but" onclick="javascript:serverSend('Midnite/123/ibatlim/10');">10 A</button>
+<button class="nav_but" onclick="javascript:serverSend('Midnite/123/ibatlim/0');">0 A</button>

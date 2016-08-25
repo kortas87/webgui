@@ -53,6 +53,10 @@ webgui_modules['BmsLionSQL'] = {
     'db_scheme'  :'db_scheme.sql'
 }
 
+webgui_modules['FishLogger'] = {
+    'name' : 'FishLogger',
+}
+
 #webgui_modules['BmsLion'] = {
 #    '/dev/ttyACM0','/dev/ttyACM1',
 #    '/dev/ttyUSB0',
@@ -65,41 +69,4 @@ webgui_modules['SendMail'] = {
     'destination':'xxx@seznam.cz',
     "username":'xxx',
     'password':'x'
-}
-
-webgui_modules['SDSmikro_doma'] = {
-    'name' : 'SDS doma',
-    'address':'192.168.33.43',
-    'password': 'xxx'
-}
-
-webgui_modules['SDSmikro_policko'] = {
-    'name' : 'SDS policko',
-    'address':'192.168.33.101',
-    'password': 'xxx'
-}
-
-webgui_modules['Midnite'] = {
-    'name' : 'Midnite',
-    'address':'192.168.33.6',
-}
-
-webgui_modules['Camera_bazen'] = {
-    'name' : 'BazenCam',
-    'snapshotdir' : 'bazen',
-    'address':'http://192.168.33.8/live/snapshot',
-    'username': 'admin',
-    'password': 'admin'
-}
-
-webgui_modules['Camera_doma'] = {
-    'name' : 'DomaCam',
-    'snapshotdir' : 'doma',
-    'address':'http://192.168.33.47/live/snapshot',
-    'username': 'admin',
-    'password': 'admin'
-}
-
-webgui_modules['CustomAll'] = {
-    'name' : 'VSE',
 }

@@ -58,21 +58,28 @@ class CustomAll:
         
         
         # assign objects to single datalayer...
-        #self.datalayer.sds_policko = config.modules['SDSmikro_policko']['obj'].datalayer
-        #self.datalayer.sds_doma = config.modules['SDSmikro_doma']['obj'].datalayer
-        #self.datalayer.midnite = config.modules['Midnite']['obj'].datalayer
-        #self.datalayer.camera_bazen = config.modules['Camera_bazen']['obj'].datalayer
-        #self.datalayer.camera_doma = config.modules['Camera_doma']['obj'].datalayer
+        self.datalayer.sds_policko = config.modules['SDSmikro_policko']['obj'].datalayer
+        self.datalayer.sds_doma = config.modules['SDSmikro_doma']['obj'].datalayer
+        self.datalayer.midnite = config.modules['Midnite']['obj'].datalayer
+        self.datalayer.camera_bazen = config.modules['Camera_bazen']['obj'].datalayer
+        self.datalayer.camera_doma = config.modules['Camera_doma']['obj'].datalayer
         
         # omezeni proudu na zaklade alarmu cell log
-        #if self.datalayer.sds_doma.opto2 != 0:
-        #    self.datalayer.alarmCounter += 1
-        #    self.datalayer.currentLimitReleaseCounter = 0
-        #else:
-        #    self.datalayer.alarmCounter = 0
-        #    self.datalayer.currentLimitReleaseCounter += 1
-        #
-           
+        if self.datalayer.sds_doma.opto2 != 0:
+            self.datalayer.alarmCounter += 1
+            self.datalayer.currentLimitReleaseCounter = 0
+        else:
+            self.datalayer.alarmCounter = 0
+            self.datalayer.currentLimitReleaseCounter += 1
+        
+        # po uplynuti doby zacit snizovat proud
+        if self.datalayer.alarmCounter > 10:
+            self.datalayer.midnite.ibatlimNew = self.datalayer.midnite.ibat - 2
+            
+        # po uplynuti doby resetovat omezeni proudu
+        if self.datalayer.currentLimitReleaseCounter > 10:
+            self.datalayer.midnite.ibatlimNew = 88
+            
         
         while not self.terminate_flag:
             #do some more calculation? ...
